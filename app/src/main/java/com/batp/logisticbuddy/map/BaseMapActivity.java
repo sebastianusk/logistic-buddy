@@ -39,6 +39,7 @@ public abstract class BaseMapActivity extends AppCompatActivity implements OnMap
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
+        ButterKnife.bind(this);
 
         dialog = new ProgressDialog(this);
 
@@ -54,6 +55,8 @@ public abstract class BaseMapActivity extends AppCompatActivity implements OnMap
     protected abstract UiSettings setMapUISetting(GoogleMap googleMap);
 
     protected abstract LocationListener getLocationListener();
+
+    protected abstract boolean goToPosition();
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -80,9 +83,11 @@ public abstract class BaseMapActivity extends AppCompatActivity implements OnMap
         return new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
-                mMap.animateCamera(cameraUpdate);
+                if(goToPosition()) {
+                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15f);
+                    mMap.animateCamera(cameraUpdate);
+                }
                 if (ActivityCompat.checkSelfPermission(BaseMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED
                         && ActivityCompat.checkSelfPermission(BaseMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)

@@ -130,23 +130,31 @@ public class MapData implements Parcelable{
 
     private static ArrayList<ItemData> convertItemsFromFirebase(Map<String, Object> mapObj) {
         ArrayList<Object> objectMap = (ArrayList<Object>) mapObj.get("item");
-        ArrayList<ItemData> list = new ArrayList<>();
-        for (Object obj : objectMap) {
-            if (obj instanceof Map) {
-                Map<String, Object> item = (Map<String, Object>) obj;
-                ItemData itemData = new ItemData();
-                itemData.setId((String) item.get("id"));
-                list.add(itemData);
+        if(objectMap != null) {
+            ArrayList<ItemData> list = new ArrayList<>();
+            for (Object obj : objectMap) {
+                if (obj instanceof Map) {
+                    Map<String, Object> item = (Map<String, Object>) obj;
+                    ItemData itemData = new ItemData();
+                    itemData.setId((String) item.get("id"));
+                    list.add(itemData);
+                }
             }
+            return list;
+        } else {
+            return null;
         }
-        return list;
     }
 
     private static LatLng converPositionFromFirebase(Map<String, Object> mapObj) {
-        return new LatLng(
-                ((HashMap<String, Double>) mapObj.get("position")).get("latitude")
-                , ((HashMap<String, Double>) mapObj.get("position")).get("longitude")
-        );
+        if(mapObj.get("position") != null) {
+            return new LatLng(
+                    ((HashMap<String, Double>) mapObj.get("position")).get("latitude")
+                    , ((HashMap<String, Double>) mapObj.get("position")).get("longitude")
+            );
+        } else {
+            return null;
+        }
     }
 
     @Exclude

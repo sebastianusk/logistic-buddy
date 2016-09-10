@@ -33,8 +33,8 @@ import rx.schedulers.Schedulers;
  */
 public class FirebaseHandler {
     private static final String ORDER_TABLE = "order";
-    private static final String DRIVER_TABLE = "driver";
     private static final String TAG = FirebaseHandler.class.getSimpleName();
+    public static final String BASE_MAP = "base";
 
     public static void sendOrder(final MapData param, final FirebaseListener listener) {
         final DatabaseReference mFirebaseDatabaseReference;
@@ -66,6 +66,63 @@ public class FirebaseHandler {
                 listener.onFailed(e.toString());
             }
         });
+    }
+
+    public static void updateOrder(final MapData param, final FirebaseListener listener) {
+        final DatabaseReference mFirebaseDatabaseReference;
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference.child(ORDER_TABLE)
+                .setValue(param)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        mFirebaseDatabaseReference.child(param.getRecipient())
+                                .setValue(param)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        listener.onSuccess();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        listener.onFailed(e.toString());
+                                    }
+                                });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                listener.onFailed(e.toString());
+            }
+        });
+    }
+
+    public static void getBaseLocation(final GetOrderListener listener) {
+        if(listener == null)
+            return;
+        DatabaseReference mFirebaseDatabaseReference;
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference.child(BASE_MAP)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.i(TAG, "data shanpshot is " + dataSnapshot.toString());
+                        MapData base = new MapData();
+                        if (dataSnapshot.getValue() instanceof Map) {
+                            Map<String, Object> mapObj = (Map<String, Object>) dataSnapshot.getValue();
+                            base = MapData.convertFromFirebase(mapObj);
+                        }
+                        listener.onSuccess(base);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        listener.onFailed(databaseError.getMessage());
+                    }
+                });
+
     }
 
     public void receiveOrders(final GetOrdersListener listener){
@@ -144,15 +201,25 @@ public class FirebaseHandler {
                 });
     }
 
-    public void updateOrders(List<MapData> orders, FirebaseListener listener) {
+    public void updateOrders(List<MapData> orders, final FirebaseListener listener) {
         Observable.from(orders)
                 .flatMap(new Func1<MapData, Observable<String>>() {
                     @Override
-                    public Observable<String> call(MapData mapData) {
+                    public Observable<String> call(final MapData mapData) {
                         return Observable.create(new Observable.OnSubscribe<String>() {
                             @Override
-                            public void call(Subscriber<? super String> subscriber) {
+                            public void call(final Subscriber<? super String> subscriber) {
+                                updateOrder(mapData, new FirebaseListener() {
+                                    @Override
+                                    public void onSuccess() {
+                                        subscriber.onNext("OK");
+                                    }
 
+                                    @Override
+                                    public void onFailed(String error) {
+                                        subscriber.onError(new Throwable(error));
+                                    }
+                                });
                             }
                         });
                     }
@@ -169,14 +236,37 @@ public class FirebaseHandler {
 
             @Override
             public void onError(Throwable e) {
-
+                listener.onFailed(e.getMessage());
             }
 
             @Override
             public void onNext(List<String> strings) {
-
+                listener.onSuccess();
             }
         });
+    }
+
+    public static void storeBaseMap(MapData mapData, final FirebaseListener listener) {
+        if(listener == null){
+            return;
+        }
+
+        final DatabaseReference mFirebaseDatabaseReference;
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference.child(BASE_MAP)
+                .setValue(mapData)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        listener.onSuccess();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                listener.onFailed(e.toString());
+            }
+        });
+
     }
 
     public interface SessionListener {
@@ -191,6 +281,12 @@ public class FirebaseHandler {
 
     public interface GetOrdersListener {
         void onSuccess(List<MapData> mapData);
+
+        void onFailed(String error);
+    }
+
+    public interface GetOrderListener{
+        void onSuccess(MapData mapData);
 
         void onFailed(String error);
     }

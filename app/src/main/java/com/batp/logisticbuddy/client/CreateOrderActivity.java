@@ -2,6 +2,7 @@ package com.batp.logisticbuddy.client;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -92,6 +93,16 @@ public class CreateOrderActivity extends BaseMapActivity {
         googleMap.getUiSettings().setMyLocationButtonEnabled(false);
         googleMap.setBuildingsEnabled(true);
         return googleMap.getUiSettings();
+    }
+
+    @Override
+    protected LocationListener getLocationListener() {
+        return null;
+    }
+
+    @Override
+    protected boolean goToPosition() {
+        return false;
     }
 
     private void initViewListener() {
