@@ -40,7 +40,6 @@ public abstract class BaseMapActivity extends AppCompatActivity implements OnMap
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
         ButterKnife.bind(this);
-
         dialog = new ProgressDialog(this);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()

@@ -38,6 +38,7 @@ public class FirebaseHandler {
 
     private static final String TAG = FirebaseHandler.class.getSimpleName();
     public static final String BASE_MAP = "base";
+    private static final String TRUCK = "truck";
 
     public static void sendOrder(final MapData param, final FirebaseListener listener) {
         final DatabaseReference mFirebaseDatabaseReference;
@@ -71,39 +72,47 @@ public class FirebaseHandler {
             public void onFailure(@NonNull Exception e) {
                 listener.onFailed(e.toString());
             }
-        })
-        ;
+        });
+    }
+
+    public void getOrderLocation(final GetDriverDesignatedLocations listener) {
+        DatabaseReference mFireBaseDataReference;
+        mFireBaseDataReference = FirebaseDatabase.getInstance().getReference();
+        mFireBaseDataReference.child("truck0").child("destinations")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        List<MapData> mapDataList = (List<MapData>) dataSnapshot.getValue();
+                        listener.onSuccessList(mapDataList);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     public static void updateOrder(final MapData param, final FirebaseListener listener) {
+
         final DatabaseReference mFirebaseDatabaseReference;
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mFirebaseDatabaseReference.child(ORDER_TABLE)
+        mFirebaseDatabaseReference.child(CLIENT_TABLE)
+                .child(param.getUserId())
+                .child(param.getKey())
                 .setValue(param)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        mFirebaseDatabaseReference.child(param.getRecipient())
-                                .setValue(param)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        listener.onSuccess();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        listener.onFailed(e.toString());
-                                    }
-                                });
+                        listener.onSuccess();
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                listener.onFailed(e.toString());
-            }
-        });
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        listener.onFailed(e.toString());
+                    }
+                });
     }
 
     public static void getBaseLocation(final GetOrderListener listener) {
@@ -158,58 +167,79 @@ public class FirebaseHandler {
                 });
     }
 
-    public Subscription storeRoute(final Map<String, TruckData> truckDatas, final FirebaseListener listener) {
+    public void storeRoute(final Map<String, TruckData> truckDatas, final FirebaseListener listener) {
 
-        return Observable.from(truckDatas.entrySet())
-                .flatMap(new Func1<Map.Entry<String, TruckData>, Observable<String>>() {
-                    @Override
-                    public Observable<String> call(final Map.Entry<String, TruckData> stringTruckDataEntry) {
-                        return Observable.create(new Observable.OnSubscribe<String>() {
-                            @Override
-                            public void call(final Subscriber<? super String> subscriber) {
-                                DatabaseReference mFirebaseDatabaseReference;
-                                mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-                                mFirebaseDatabaseReference.child(stringTruckDataEntry.getKey())
-                                        .setValue(stringTruckDataEntry.getValue())
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                subscriber.onNext("OK");
-                                            }
-                                        }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        subscriber.onError(e);
-                                    }
-                                });
-                            }
-                        });
-                    }
-                })
-                .toList()
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<String>>() {
-                    @Override
-                    public void onCompleted() {
+        for (int i = 0; i < truckDatas.size(); i++){
+            DatabaseReference mFirebaseDatabaseReference;
+            mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+            mFirebaseDatabaseReference
+                    .child(TRUCK)
+                    .setValue(truckDatas)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            listener.onSuccess();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            listener.onFailed(e.getMessage());
+                        }
+            });
+        }
 
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(List<String> strings) {
-
-                    }
-                });
+//        return Observable.from(truckDatas.entrySet())
+//                .flatMap(new Func1<Map.Entry<String, TruckData>, Observable<String>>() {
+//                    @Override
+//                    public Observable<String> call(final Map.Entry<String, TruckData> stringTruckDataEntry) {
+//                        return Observable.create(new Observable.OnSubscribe<String>() {
+//                            @Override
+//                            public void call(final Subscriber<? super String> subscriber) {
+//                                DatabaseReference mFirebaseDatabaseReference;
+//                                mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+//                                mFirebaseDatabaseReference.child(stringTruckDataEntry.getKey())
+//                                        .setValue(stringTruckDataEntry.getValue())
+//                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                            @Override
+//                                            public void onComplete(@NonNull Task<Void> task) {
+//                                                subscriber.onNext("OK");
+//                                            }
+//                                        }).addOnFailureListener(new OnFailureListener() {
+//                                    @Override
+//                                    public void onFailure(@NonNull Exception e) {
+//                                        subscriber.onError(e);
+//                                    }
+//                                });
+//                            }
+//                        });
+//                    }
+//                })
+//                .toList()
+//                .subscribeOn(Schedulers.io())
+//                .unsubscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Subscriber<List<String>>() {
+//                    @Override
+//                    public void onCompleted() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onNext(List<String> strings) {
+//
+//                    }
+//                });
     }
 
-    public void updateOrders(List<MapData> orders, final FirebaseListener listener) {
-        Observable.from(orders)
+    public Subscription updateOrders(List<MapData> orders, final FirebaseListener listener) {
+
+
+        return Observable.from(orders)
                 .flatMap(new Func1<MapData, Observable<String>>() {
                     @Override
                     public Observable<String> call(final MapData mapData) {
@@ -231,26 +261,25 @@ public class FirebaseHandler {
                         });
                     }
                 })
-                .toList()
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<String>>() {
+                .subscribe(new Subscriber<String>() {
                     @Override
                     public void onCompleted() {
 
                     }
 
-            @Override
-            public void onError(Throwable e) {
-                listener.onFailed(e.getMessage());
-            }
+                @Override
+                public void onError(Throwable e) {
+                    listener.onFailed(e.getMessage());
+                }
 
-            @Override
-            public void onNext(List<String> strings) {
-                listener.onSuccess();
-            }
-        });
+                @Override
+                public void onNext(String strings) {
+                    listener.onSuccess();
+                }
+            });
     }
 
     public static void storeBaseMap(MapData mapData, final FirebaseListener listener) {
@@ -345,6 +374,12 @@ public class FirebaseHandler {
         void onSuccess(MapData mapData);
 
         void onFailed(String error);
+    }
+
+    public interface GetDriverDesignatedLocations {
+        void onSuccessList(List<MapData> mapDatas);
+
+        void onFailed();
     }
 
     public static void signInWithEmailAndPassword(String userName, String password, final FirebaseListener listener) {

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.batp.logisticbuddy.client.CreateOrderActivity;
 import com.batp.logisticbuddy.client.ListOrderActivity;
 import com.batp.logisticbuddy.driverapplication.DriverMapsActivity;
+import com.batp.logisticbuddy.client.OrderDetailActivity;
 import com.batp.logisticbuddy.helper.SessionHandler;
 import com.batp.logisticbuddy.server.ServerActivity;
 import com.google.firebase.auth.FirebaseAuth;

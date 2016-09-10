@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/LogisticBuddy.iml" filepath="$PROJECT_DIR$/LogisticBuddy.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/logistic-buddy.iml" filepath="$PROJECT_DIR$/logistic-buddy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/routing/routing.iml" filepath="$PROJECT_DIR$/routing/routing.iml" />
     </modules>
   </component>
 </project>

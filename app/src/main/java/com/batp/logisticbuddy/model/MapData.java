@@ -1,5 +1,6 @@
 package com.batp.logisticbuddy.model;
 
+import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -26,6 +27,7 @@ public class MapData implements Parcelable{
     String verifyCode;
     String truck;
     String userId;
+    String estimatedTime;
     private String key;
 
     protected MapData(Parcel in) {
@@ -119,6 +121,14 @@ public class MapData implements Parcelable{
         this.userId = userId;
     }
 
+    public String getEstimatedTime() {
+        return estimatedTime;
+    }
+
+    public void setEstimatedTime(String estimatedTime) {
+        this.estimatedTime = estimatedTime;
+    }
+
     @Exclude
     public MarkerOptions getMarker() {
         MarkerOptions markerOptions = new MarkerOptions();
@@ -138,6 +148,9 @@ public class MapData implements Parcelable{
         marker.setPhone((String) mapObj.get("phone"));
         marker.setRecipient((String) mapObj.get("recipient"));
         marker.setVerifyCode((String) mapObj.get("verifyCode"));
+        marker.setUserId((String) mapObj.get("userId"));
+        marker.setKey((String) mapObj.get("key"));
+        marker.setEstimatedTime((String) mapObj.get("estimatedTime"));
         marker.setPosition(converPositionFromFirebase(mapObj));
         marker.setItem(convertItemsFromFirebase(mapObj));
         return marker;
@@ -170,6 +183,13 @@ public class MapData implements Parcelable{
         } else {
             return null;
         }
+    }
+
+    public Location convertToPosition(){
+        Location location = new Location("dummy_provider");
+        location.setLatitude(position.latitude);
+        location.setLongitude(position.longitude);
+        return location;
     }
 
     @Exclude

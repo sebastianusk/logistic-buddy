@@ -27,11 +27,20 @@
         android:text="@string/find_fastest_routes"/>
 
     <Button
-        android:id="@+id/botton_set_base"
+        android:id="@+id/button_set_base"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toStartOf="@+id/button_find_routes"
         android:layout_alignParentBottom="true"
+        android:text="@string/set_home_base"
         />
+
+    <Button
+        android:id="@+id/button_manage_truck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/button_set_base"
+        android:layout_alignParentBottom="true"
+        android:text="@string/manage_truck"/>
 
 </RelativeLayout>

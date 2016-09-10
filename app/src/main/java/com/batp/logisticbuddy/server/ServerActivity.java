@@ -59,7 +59,12 @@ public class ServerActivity extends BaseMapActivity {
     void findFastestRoutes(){
         dialog.show();
         RouteCalc routeCalc = new RouteCalcImpl(getString(R.string.google_direction_key));
-        compositeSubscription.add(routeCalc.calculateRoute(orders, driverDatas.size(), new RouteCalc.RouteCalcListener() {
+        List<MapData> allPoints = new ArrayList<>();
+        allPoints.add(baseMapData);
+        for (MapData data: orders) {
+            allPoints.add(data);
+        }
+        compositeSubscription.add(routeCalc.calculateRoute(allPoints, driverDatas.size(), new RouteCalc.RouteCalcListener() {
             @Override
             public void onSuccess(SimpleMatrix simpleMatrix) {
                 Log.d(TAG, simpleMatrix.toString());
@@ -68,22 +73,40 @@ public class ServerActivity extends BaseMapActivity {
                     driverData.setStatus("IDLE");
                     Map<String, MapData> mapDatas = new HashMap<>();
                     for(int j = 0; j < simpleMatrix.numCols(); j ++){
-                        MapData mapData = orders.get((int) simpleMatrix.get(i, j));
-                        if(j != 0)
+                        MapData mapData;
+                        if(simpleMatrix.get(i, j) == 0){
+                            mapData = baseMapData;
+                        } else {
+                            mapData = orders.get((int) simpleMatrix.get(i, j) - 1);
                             mapData.setTruck(TRUCK + i);
+                        }
                         mapDatas.put(String.valueOf(j), mapData);
                     }
                     driverData.setDestinations(mapDatas);
                     modifyTruck(i, driverData);
                 }
 
-                firebaseHandler.updateOrders(orders, new FirebaseHandler.FirebaseListener() {
+                firebaseHandler.storeRoute(driverDatas, new FirebaseHandler.FirebaseListener() {
                     @Override
                     public void onSuccess() {
-                        dialog.dismiss();
                         Toast.makeText(ServerActivity.this,
                                 ServerActivity.this.getString(R.string.success_route),
                                 Toast.LENGTH_SHORT).show();
+                        firebaseHandler.updateOrders(orders, new FirebaseHandler.FirebaseListener() {
+                            @Override
+                            public void onSuccess() {
+                                dialog.dismiss();
+                                Toast.makeText(ServerActivity.this,
+                                        ServerActivity.this.getString(R.string.success_route),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onFailed(String error) {
+                                dialog.dismiss();
+                                Toast.makeText(ServerActivity.this, error, Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
 
                     @Override
@@ -93,21 +116,7 @@ public class ServerActivity extends BaseMapActivity {
                     }
                 });
 
-                compositeSubscription.add(firebaseHandler.storeRoute(driverDatas, new FirebaseHandler.FirebaseListener() {
-                    @Override
-                    public void onSuccess() {
-                        dialog.dismiss();
-                        Toast.makeText(ServerActivity.this,
-                                ServerActivity.this.getString(R.string.success_route),
-                                Toast.LENGTH_SHORT).show();
-                    }
 
-                    @Override
-                    public void onFailed(String error) {
-                        dialog.dismiss();
-                        Toast.makeText(ServerActivity.this, error, Toast.LENGTH_SHORT).show();
-                    }
-                }));
             }
             @Override
             public void onFailed(String error) {
@@ -116,7 +125,7 @@ public class ServerActivity extends BaseMapActivity {
         }));
     }
 
-    @OnClick(R.id.botton_set_base)
+    @OnClick(R.id.button_set_base)
     void setBase(){
         Intent intent = new Intent(ServerActivity.this
                 , FindAddressActivity.class);
@@ -126,6 +135,11 @@ public class ServerActivity extends BaseMapActivity {
             intent.putExtra(CreateOrderActivity.PARAM_LONGITUDE, baseMapData.getPosition().longitude);
         }
         startActivityForResult(intent, REQUEST_LOCATION);
+    }
+
+    @OnClick(R.id.button_manage_truck)
+    void setTruck(){
+
     }
 
     @Override
