@@ -4,63 +4,81 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:context=".MenuActivity"
         tools:showIn="@layout/activity_menu"
         android:orientation="vertical"
         >
 
-        <android.support.v7.widget.AppCompatButton
+        <TextView
             android:id="@+id/btn_start_driving"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:textColor="@color/white"
+            android:background="@drawable/cards_layout"
             android:layout_margin="5dp"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:gravity="center_vertical"
+            android:drawablePadding="@dimen/margin_small"
+            android:padding="@dimen/margin_small"
+            android:drawableLeft="@drawable/ic_seqhack_add_button_1"
             android:text="START DRIVING"/>
 
-        <android.support.v7.widget.AppCompatButton
+        <TextView
             android:id="@+id/btn_create_order"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:textColor="@color/white"
+            android:background="@drawable/cards_layout"
             android:layout_margin="5dp"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:gravity="center_vertical"
+            android:drawablePadding="@dimen/margin_small"
+            android:padding="@dimen/margin_small"
+            android:drawableLeft="@drawable/ic_seqhack_add_button_1"
             android:text="ORDER DELIVERY"/>
 
 
-    <android.support.v7.widget.AppCompatButton
+    <TextView
         android:id="@+id/list_order_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/white"
+        android:background="@drawable/cards_layout"
         android:layout_margin="5dp"
-
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        android:gravity="center_vertical"
+        android:drawablePadding="@dimen/margin_small"
+        android:padding="@dimen/margin_small"
+        android:drawableLeft="@drawable/ic_seqhack_list_1"
         android:text="LIST ORDER"/>
 
-    <android.support.v7.widget.AppCompatButton
+    <TextView
         android:id="@+id/admin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/white"
+        android:background="@drawable/cards_layout"
         android:layout_margin="5dp"
-
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        android:gravity="center_vertical"
+        android:drawablePadding="@dimen/margin_small"
+        android:padding="@dimen/margin_small"
+        android:drawableLeft="@drawable/ic_seqhack_list_1"
         android:text="ADMIN"/>
 
-        <android.support.v7.widget.AppCompatButton
+        <TextView
             android:id="@+id/logout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:textColor="@color/white"
+            android:background="@drawable/cards_layout"
             android:layout_margin="5dp"
-
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:gravity="center_vertical"
+            android:drawablePadding="@dimen/margin_small"
+            android:padding="@dimen/margin_small"
+            android:drawableLeft="@drawable/ic_seqhack_logout_1"
             android:text="LOGOUT"/>
 
 

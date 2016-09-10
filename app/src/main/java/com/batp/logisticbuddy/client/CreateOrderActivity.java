@@ -1,15 +1,20 @@
 package com.batp.logisticbuddy.client;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.batp.logisticbuddy.R;
@@ -48,12 +53,6 @@ public class CreateOrderActivity extends BaseMapActivity {
     @BindView(R.id.btn_submit)
     Button submitButton;
 
-    @BindView(R.id.verify_code)
-    EditText verifyCode;
-
-    @BindView(R.id.verify_code_layout)
-    View verifyCodeLayout;
-
     @BindView(R.id.address_layout)
     View addressView;
 
@@ -71,6 +70,12 @@ public class CreateOrderActivity extends BaseMapActivity {
 
     MapData mapData;
     ItemCodeAdapter itemAdapter;
+
+    @BindView(R.id.choose_location)
+    TextView chooseLocation;
+
+    @BindView(R.id.change_location)
+    TextView changeLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,23 +134,29 @@ public class CreateOrderActivity extends BaseMapActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                listItem.setVisibility(View.VISIBLE);
                 if(itemCode.getText().toString().length() > 0){
                     itemAdapter.addItem(new ItemData(itemCode.getText().toString()));
+                    itemCode.setText("");
                 }else{
                     itemCode.setError("Need to insert item code");
+                    itemCode.requestFocus();
                 }
             }
         });
     }
 
     private void initView() {
-        verifyCodeLayout.setVisibility(View.GONE);
         if (mapData.getPosition() == null) {
             mapView.setVisibility(View.GONE);
+            changeLocation.setVisibility(View.GONE);
         }
         itemAdapter = ItemCodeAdapter.createInstance();
         listItem.setLayoutManager(new LinearLayoutManager(this));
         listItem.setAdapter(itemAdapter);
+
+        listItem.setVisibility(View.GONE);
     }
 
     private MapData getParam() {
@@ -153,7 +164,6 @@ public class CreateOrderActivity extends BaseMapActivity {
         mapData.setAddress(address.getText().toString());
         mapData.setRecipient(recipient.getText().toString());
         mapData.setPhone(phone.getText().toString());
-        mapData.setVerifyCode(verifyCode.getText().toString());
         mapData.setItem(itemAdapter.getList());
         mapData.setUserId(FirebaseHandler.getCurrentSessionUserId());
         return mapData;
@@ -167,7 +177,32 @@ public class CreateOrderActivity extends BaseMapActivity {
             @Override
             public void onSuccess() {
                 dialog.dismiss();
-                finish();
+                Dialog finishDialog = new Dialog(CreateOrderActivity.this);
+                finishDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                finishDialog.setCancelable(false);
+                finishDialog.setContentView(R.layout.finish_order_layout);
+
+                EditText text = (EditText) finishDialog.findViewById(R.id.verify_code);
+                text.setText(mapData.getVerifyCode());
+
+                Button dialogButton = (Button) finishDialog.findViewById(R.id.back_button);
+                dialogButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        finish();
+                    }
+                });
+
+                WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+                lp.copyFrom(dialog.getWindow().getAttributes());
+                lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+                lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                lp.gravity = Gravity.CENTER;
+
+                finishDialog.getWindow().setAttributes(lp);
+
+                finishDialog.show();
             }
 
             @Override
@@ -184,8 +219,7 @@ public class CreateOrderActivity extends BaseMapActivity {
 
         Random rnd = new Random();
         int n = 100000 + rnd.nextInt(999999);
-        verifyCode.setText(String.valueOf(n));
-        verifyCodeLayout.setVisibility(View.VISIBLE);
+        mapData.setVerifyCode(String.valueOf(n));
 
     }
 
@@ -194,6 +228,8 @@ public class CreateOrderActivity extends BaseMapActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_LOCATION) {
             if (resultCode == RESULT_OK) {
+                chooseLocation.setText("Location has been set.");
+                changeLocation.setVisibility(View.VISIBLE);
                 mapView.setVisibility(View.VISIBLE);
                 LatLng position = new LatLng(data.getDoubleExtra(PARAM_LATITUDE, 0),
                         data.getDoubleExtra(PARAM_LONGITUDE, 0));

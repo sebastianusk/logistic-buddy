@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.batp.logisticbuddy.client.CreateOrderActivity;
 import com.batp.logisticbuddy.client.OrderDetailActivity;
@@ -21,19 +22,19 @@ import butterknife.ButterKnife;
 public class MenuActivity extends AppCompatActivity {
 
     @BindView(R.id.btn_start_driving)
-    Button startDriving;
+    TextView startDriving;
 
     @BindView(R.id.list_order_button)
-    Button listOrder;
+    TextView listOrder;
 
     @BindView(R.id.btn_create_order)
-    Button createOrder;
+    TextView createOrder;
 
     @BindView(R.id.logout)
-    Button logout;
+    TextView logout;
 
     @BindView(R.id.admin)
-    Button admin;
+    TextView admin;
 
     FirebaseAuth mFirebaseAuth;
     FirebaseUser mFirebaseUser;
@@ -89,6 +90,7 @@ public class MenuActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mFirebaseAuth.signOut();
                 startActivity(new Intent(MenuActivity.this, LoginActivity.class));
+                finish();
             }
         });
         listOrder.setOnClickListener(new View.OnClickListener() {

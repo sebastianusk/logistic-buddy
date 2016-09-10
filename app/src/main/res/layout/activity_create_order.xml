@@ -27,24 +27,14 @@
                 android:layout_height="wrap_content"
                 android:hint="Recipient Name"
                 android:imeOptions="actionNext"
-                android:inputType="textCapWords">
+                android:background="@android:color/transparent"
+                android:inputType="textCapWords"
+                android:drawablePadding="@dimen/margin_small"
+                android:drawableLeft="@drawable/ic_supervisor_account_black_40dp"
+                >
 
                 <requestFocus/>
             </EditText>
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp">
-
-            <EditText
-                android:id="@+id/address"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Address"
-                android:inputType="textCapWords"
-                android:maxLines="10" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -58,8 +48,42 @@
                 android:layout_height="wrap_content"
                 android:hint="Phone Number"
                 android:imeOptions="actionDone"
-                android:inputType="number" />
+                android:inputType="number"
+                android:background="@android:color/transparent"
+
+                android:drawablePadding="@dimen/margin_small"
+                android:drawableLeft="@drawable/ic_call_black_40dp"
+                />
         </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp">
+
+            <EditText
+                android:id="@+id/address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Address"
+                android:inputType="textCapWords"
+                android:maxLines="10"
+                android:background="@android:color/transparent"
+                android:drawablePadding="@dimen/margin_small"
+                android:drawableLeft="@drawable/ic_home_black_40dp"
+                />
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Item to ship"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:paddingTop="@dimen/margin_small"
+            android:paddingBottom="@dimen/margin_small"/>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -85,22 +109,22 @@
 
         </LinearLayout>
 
-        <TextView
-            android:layout_marginTop="@dimen/margin_small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="List Item to Ship"/>
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/list_item"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:background="@drawable/cards_layout"
+            android:padding="@dimen/margin_small"/>
 
 
         <RelativeLayout
             android:id="@+id/address_layout"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_med"
+            android:padding="@dimen/margin_vs"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/cards_layout"
             android:layout_marginBottom="@dimen/margin_small"
             android:layout_marginTop="@dimen/margin_vs">
 
@@ -108,22 +132,36 @@
                 android:id="@+id/arrow_right"
                 android:layout_width="@dimen/img_thumb_s"
                 android:layout_height="@dimen/img_thumb_s"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:src="@drawable/ic_keyboard_arrow_right_black_24dp" />
+                android:src="@drawable/ic_room_black_24dp" />
 
             <TextView
                 android:id="@+id/choose_location"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/margin_vs"
                 android:layout_marginRight="@dimen/margin_vs"
-                android:layout_toLeftOf="@id/arrow_right"
-                android:layout_toStartOf="@id/arrow_right"
+                android:layout_marginLeft="@dimen/margin_vs"
+                android:layout_marginStart="@dimen/margin_vs"
+                android:layout_toRightOf="@id/arrow_right"
+                android:layout_toEndOf="@id/arrow_right"
                 android:hint="@string/choose_location"
                 android:maxLines="10" />
+
+            <TextView
+                android:id="@+id/change_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/choose_location"
+                android:layout_toEndOf="@id/choose_location"
+                android:text="Change"
+                android:textSize="10dp"
+                android:layout_marginLeft="@dimen/margin_small"
+                android:textColor="@color/dark_green"/>
 
         </RelativeLayout>
 
@@ -139,43 +177,16 @@
                 android:layout_height="300dp" />
         </RelativeLayout>
 
-
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_submit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small"
-            android:background="@color/colorAccent"
+            android:background="@color/colorPrimary"
+            android:layout_alignParentBottom="true"
             android:text="Submit"
             android:textColor="@color/white" />
 
-        <LinearLayout
-            android:id="@+id/verify_code_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="20dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="Your Verification Code"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/verify_code"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:enabled="false"
-                android:gravity="center"
-                android:hint="Your Verification Number"
-                android:inputType="number"
-                android:text="123456"
-                android:textSize="40sp" />
-        </LinearLayout>
     </LinearLayout>
+
 </ScrollView>
