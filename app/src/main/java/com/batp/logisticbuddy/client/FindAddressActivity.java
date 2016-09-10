@@ -80,7 +80,12 @@ public class FindAddressActivity extends BaseMapActivity implements GoogleApiCli
         submitPointer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setResult(CreateOrderActivity.REQUEST_LOCATION);
+                Intent intent = getIntent();
+                intent.putExtra(CreateOrderActivity.PARAM_ADDRESS, addressEditText.getText().toString());
+                intent.putExtra(CreateOrderActivity.PARAM_ADDRESS, addressEditText.getText().toString());
+
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
     }

@@ -36,11 +36,17 @@ public class CreateOrderActivity extends AppCompatActivity {
 
     private static final String ORDER_TABLE = "order";
     public static final int REQUEST_LOCATION = 123;
+    public static final String PARAM_LATITUDE = "latitude";
+    public static final String PARAM_LONGITUDE = "latitude";
+
     @BindView(R.id.recipient)
     EditText recipient;
 
     @BindView(R.id.address)
     EditText address;
+
+    @BindView(R.id.choose_location)
+    EditText chooseLocation;
 
     @BindView(R.id.phone)
     EditText phone;
@@ -78,13 +84,6 @@ public class CreateOrderActivity extends AppCompatActivity {
             }
         });
         addressView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivityForResult(new Intent(CreateOrderActivity.this
-                        ,FindAddressActivity.class), REQUEST_LOCATION);
-            }
-        });
-        address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivityForResult(new Intent(CreateOrderActivity.this
@@ -152,22 +151,11 @@ public class CreateOrderActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_LOCATION) {
             if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                Log.i(FindAddressActivity.class.getSimpleName(), "Place: " + place.getName());
-                LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                builder.include(place.getLatLng());
-                LatLngBounds bounds = builder.build();
-                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds,DEFAULT_MAPS_PADDING));
-                addressEditText.setText(place.getAddress());
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-                // TODO: Handle the error.
-                Log.i(FindAddressActivity.class.getSimpleName(), status.getStatusMessage());
 
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
+
+
             }
         }
     }
-    }
+
 }

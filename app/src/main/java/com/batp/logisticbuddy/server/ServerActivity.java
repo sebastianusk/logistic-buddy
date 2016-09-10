@@ -36,9 +36,9 @@ public class ServerActivity extends BaseMapActivity {
         // making sure that the maps is ready
         if(mMap != null){
             dialog.show();
-            FirebaseHandler firebaseHandler = new FirebaseHandler();
-            firebaseHandler.initDatabaseReferrence();
-            firebaseHandler.receiveOrders(getListener());
+//            FirebaseHandler firebaseHandler = new FirebaseHandler();
+//            firebaseHandler.initDatabaseReferrence();
+//            firebaseHandler.receiveOrders(getListener());
 
         } else {
             Toast.makeText(this, getString(R.string.map_not_ready), Toast.LENGTH_SHORT).show();
