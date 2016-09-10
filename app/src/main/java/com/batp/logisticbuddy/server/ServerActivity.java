@@ -1,19 +1,18 @@
 package com.batp.logisticbuddy.server;
 
-import android.app.ProgressDialog;
+import android.location.LocationListener;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.batp.logisticbuddy.R;
 import com.batp.logisticbuddy.helper.FirebaseHandler;
 import com.batp.logisticbuddy.map.BaseMapActivity;
-import com.batp.logisticbuddy.model.DriverData;
+import com.batp.logisticbuddy.model.TruckData;
 import com.batp.logisticbuddy.model.MapData;
 import com.batp.logisticbuddy.route.RouteCalc;
 import com.batp.logisticbuddy.route.RouteCalcImpl;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.ejml.simple.SimpleMatrix;
@@ -31,8 +30,9 @@ import butterknife.OnClick;
 public class ServerActivity extends BaseMapActivity {
 
     private static final String TAG = ServerActivity.class.getSimpleName();
+    public static final String TRUCK = "TRUCK";
     private List<MapData> orders;
-    private List<DriverData> driverDatas;
+    private Map<String, TruckData> driverDatas;
     private FirebaseHandler firebaseHandler;
 
     @OnClick(R.id.button_get_clients)
@@ -49,26 +49,33 @@ public class ServerActivity extends BaseMapActivity {
 
     @OnClick(R.id.button_find_routes)
     void FindFastestRoutes(){
+        dialog.show();
         RouteCalc routeCalc = new RouteCalcImpl(getString(R.string.google_direction_key));
         compositeSubscription.add(routeCalc.calculateRoute(orders, driverDatas.size(), new RouteCalc.RouteCalcListener() {
             @Override
             public void onSuccess(SimpleMatrix simpleMatrix) {
                 Log.d(TAG, simpleMatrix.toString());
                 for(int i = 0; i < simpleMatrix.numRows(); i ++){
-                    DriverData driverData = new DriverData();
-                    driverData.setDriverName(driverDatas.get(i).getDriverName());
-                    Map<String, MapData> mapDatas = new HashMap<String, MapData>();
+                    TruckData driverData = new TruckData();
+                    driverData.setStatus("IDLE");
+                    Map<String, MapData> mapDatas = new HashMap<>();
                     for(int j = 0; j < simpleMatrix.numCols(); j ++){
-                        mapDatas.put(String.valueOf(j), orders.get((int) simpleMatrix.get(i,j)));
+                        MapData mapData = orders.get((int) simpleMatrix.get(i, j));
+                        if(j != 0)
+                            mapData.setTruck(TRUCK + i);
+                        mapDatas.put(String.valueOf(j), mapData);
                     }
                     driverData.setDestinations(mapDatas);
-                    driverDatas.set(i, driverData);
+                    modifyTruck(i, driverData);
                 }
-                dialog.show();
-                firebaseHandler.storeRoute(driverDatas, new FirebaseHandler.FirebaseListener() {
+
+                firebaseHandler.updateOrders(orders, new FirebaseHandler.FirebaseListener() {
                     @Override
                     public void onSuccess() {
                         dialog.dismiss();
+                        Toast.makeText(ServerActivity.this,
+                                ServerActivity.this.getString(R.string.success_route),
+                                Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -77,6 +84,22 @@ public class ServerActivity extends BaseMapActivity {
                         Toast.makeText(ServerActivity.this, error, Toast.LENGTH_SHORT).show();
                     }
                 });
+
+                compositeSubscription.add(firebaseHandler.storeRoute(driverDatas, new FirebaseHandler.FirebaseListener() {
+                    @Override
+                    public void onSuccess() {
+                        dialog.dismiss();
+                        Toast.makeText(ServerActivity.this,
+                                ServerActivity.this.getString(R.string.success_route),
+                                Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailed(String error) {
+                        dialog.dismiss();
+                        Toast.makeText(ServerActivity.this, error, Toast.LENGTH_SHORT).show();
+                    }
+                }));
 
 
             }
@@ -88,6 +111,8 @@ public class ServerActivity extends BaseMapActivity {
         }));
     }
 
+
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_server;
@@ -96,13 +121,28 @@ public class ServerActivity extends BaseMapActivity {
     @Override
     protected UiSettings setMapUISetting(GoogleMap googleMap) {
         firebaseHandler = new FirebaseHandler();
-        driverDatas = new ArrayList<>();
-        DriverData data = new DriverData();
-        data.setDriverName("Bejo");
-        driverDatas.add(data);
-        data = new DriverData();
-        data.setDriverName("Paijo");
-        driverDatas.add(data);
+        driverDatas = new HashMap<>();
+        TruckData data = new TruckData();
+        data.setStatus("IDLE");
+        addTruck(data);
+        data = new TruckData();
+        data.setStatus("IDLE");
+        addTruck(data);
+        return null;
+    }
+
+    private void addTruck(TruckData data) {
+        driverDatas.put(TRUCK + driverDatas.size(),data);
+    }
+
+    private void modifyTruck(int i, TruckData driverData) {
+        String truckCode = TRUCK + i;
+        driverDatas.remove(truckCode);
+        driverDatas.put(truckCode, driverData);
+    }
+
+    @Override
+    protected LocationListener getLocationListener() {
         return null;
     }
 

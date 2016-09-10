@@ -3,6 +3,7 @@ package com.batp.logisticbuddy.client;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -128,6 +129,11 @@ public class FindAddressActivity extends BaseMapActivity implements GoogleApiCli
         });
 
         return googleMap.getUiSettings();
+    }
+
+    @Override
+    protected LocationListener getLocationListener() {
+        return null;
     }
 
     @Override

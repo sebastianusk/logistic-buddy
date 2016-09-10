@@ -6,9 +6,9 @@ import java.util.Map;
 /**
  * Created by Toped18 on 9/10/2016.
  */
-public class DriverData {
-    String driverName;
+public class TruckData {
     Map<String, MapData> destinations;
+    String status;
 
     public Map<String, MapData> getDestinations() {
         return destinations;
@@ -18,11 +18,11 @@ public class DriverData {
         this.destinations = destinations;
     }
 
-    public String getDriverName() {
-        return driverName;
+    public String getStatus() {
+        return status;
     }
 
-    public void setDriverName(String driverName) {
-        this.driverName = driverName;
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
