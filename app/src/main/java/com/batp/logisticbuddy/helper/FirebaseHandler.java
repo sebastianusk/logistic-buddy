@@ -37,6 +37,7 @@ public class FirebaseHandler {
 
     private static final String TAG = FirebaseHandler.class.getSimpleName();
     public static final String BASE_MAP = "base";
+    private static final String TRUCK = "truck";
 
     public static void sendOrder(final MapData param, final FirebaseListener listener) {
         final DatabaseReference mFirebaseDatabaseReference;
@@ -171,6 +172,7 @@ public class FirebaseHandler {
             DatabaseReference mFirebaseDatabaseReference;
             mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
             mFirebaseDatabaseReference
+                    .child(TRUCK)
                     .setValue(truckDatas)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
