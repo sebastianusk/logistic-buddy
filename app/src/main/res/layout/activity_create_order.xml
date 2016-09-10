@@ -25,14 +25,14 @@
     </android.support.design.widget.TextInputLayout>
 
     <RelativeLayout
-        android:id="@+id/layout_value_location"
+        android:id="@+id/address_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_small"
         android:layout_marginTop="@dimen/margin_vs">
 
         <ImageView
-            android:id="@+id/layout_right"
+            android:id="@+id/arrow_right"
             android:layout_width="@dimen/img_thumb_s"
             android:layout_height="@dimen/img_thumb_s"
             android:layout_alignParentEnd="true"
@@ -48,8 +48,8 @@
             android:layout_marginLeft="@dimen/margin_vs"
             android:layout_marginRight="@dimen/margin_vs"
             android:layout_marginStart="@dimen/margin_vs"
-            android:layout_toLeftOf="@id/layout_right"
-            android:layout_toStartOf="@id/layout_right"
+            android:layout_toLeftOf="@id/arrow_right"
+            android:layout_toStartOf="@id/arrow_right"
             android:layout_centerVertical="true"
             android:clickable="true"
             android:focusable="false"

@@ -31,8 +31,8 @@ public abstract class BaseMapActivity  extends AppCompatActivity implements OnMa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(getLayoutId());
+        ButterKnife.bind(this);
 
         ButterKnife.bind(this);
 

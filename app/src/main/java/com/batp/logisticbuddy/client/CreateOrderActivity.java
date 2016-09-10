@@ -1,9 +1,11 @@
 package com.batp.logisticbuddy.client;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,7 +15,12 @@ import com.batp.logisticbuddy.R;
 import com.batp.logisticbuddy.helper.FirebaseHandler;
 import com.batp.logisticbuddy.model.ItemData;
 import com.batp.logisticbuddy.model.MapData;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
@@ -28,6 +35,7 @@ import butterknife.ButterKnife;
 public class CreateOrderActivity extends AppCompatActivity {
 
     private static final String ORDER_TABLE = "order";
+    public static final int REQUEST_LOCATION = 123;
     @BindView(R.id.recipient)
     EditText recipient;
 
@@ -46,7 +54,8 @@ public class CreateOrderActivity extends AppCompatActivity {
     @BindView(R.id.verify_code_layout)
     View verifyCodeLayout;
 
-    FirebaseHandler firebaseHandler;
+    @BindView(R.id.address_layout)
+    View addressView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +64,11 @@ public class CreateOrderActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        firebaseHandler = new FirebaseHandler();
-        firebaseHandler.initDatabaseReferrence();
         initView();
+        initViewListener();
     }
 
-    private void initView() {
+    private void initViewListener() {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,6 +77,23 @@ public class CreateOrderActivity extends AppCompatActivity {
 
             }
         });
+        addressView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(new Intent(CreateOrderActivity.this
+                        ,FindAddressActivity.class), REQUEST_LOCATION);
+            }
+        });
+        address.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(new Intent(CreateOrderActivity.this
+                        ,FindAddressActivity.class), REQUEST_LOCATION);
+            }
+        });
+    }
+
+    private void initView() {
         verifyCodeLayout.setVisibility(View.GONE);
     }
 
@@ -93,7 +118,7 @@ public class CreateOrderActivity extends AppCompatActivity {
         final ProgressDialog dialog = new ProgressDialog(CreateOrderActivity.this);
         dialog.setTitle("Please wait...");
         dialog.show();
-        firebaseHandler.sendOrder(param, new FirebaseHandler.FirebaseListener() {
+        FirebaseHandler.sendOrder(param, new FirebaseHandler.FirebaseListener() {
             @Override
             public void onSuccess() {
                 dialog.dismiss();
@@ -120,5 +145,29 @@ public class CreateOrderActivity extends AppCompatActivity {
         verifyCode.setText(String.valueOf(n));
         verifyCodeLayout.setVisibility(View.VISIBLE);
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_LOCATION) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                Log.i(FindAddressActivity.class.getSimpleName(), "Place: " + place.getName());
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                builder.include(place.getLatLng());
+                LatLngBounds bounds = builder.build();
+                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds,DEFAULT_MAPS_PADDING));
+                addressEditText.setText(place.getAddress());
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+                // TODO: Handle the error.
+                Log.i(FindAddressActivity.class.getSimpleName(), status.getStatusMessage());
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
+    }
     }
 }

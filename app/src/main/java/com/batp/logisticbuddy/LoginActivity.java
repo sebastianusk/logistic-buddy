@@ -26,16 +26,13 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.btn_login)
     Button login;
 
-    FirebaseHandler firebaseHandler;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         ButterKnife.bind(this);
-        firebaseHandler = new FirebaseHandler();
-        firebaseHandler.initializeAuth(new FirebaseHandler.SessionListener() {
+        FirebaseHandler.initializeAuth(new FirebaseHandler.SessionListener() {
             @Override
             public void onAlreadyLogin() {
                 startActivity(new Intent(LoginActivity.this, MenuActivity.class));
@@ -52,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
                 username.setText("master@batp.com");
                 password.setText("master");
                 checkRole();
-                firebaseHandler.signInWithEmailAndPassword(username.getText().toString(),
+                FirebaseHandler.signInWithEmailAndPassword(username.getText().toString(),
                         password.getText().toString(), new FirebaseHandler.FirebaseListener() {
                             @Override
                             public void onSuccess() {
