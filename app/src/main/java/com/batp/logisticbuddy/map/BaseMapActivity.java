@@ -39,7 +39,6 @@ public abstract class BaseMapActivity extends AppCompatActivity implements OnMap
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
-        ButterKnife.bind(this);
 
         dialog = new ProgressDialog(this);
 

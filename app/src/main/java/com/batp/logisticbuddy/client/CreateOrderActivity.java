@@ -2,51 +2,44 @@ package com.batp.logisticbuddy.client;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.batp.logisticbuddy.R;
+import com.batp.logisticbuddy.client.adapter.ItemCodeAdapter;
 import com.batp.logisticbuddy.helper.FirebaseHandler;
+import com.batp.logisticbuddy.map.BaseMapActivity;
 import com.batp.logisticbuddy.model.ItemData;
 import com.batp.logisticbuddy.model.MapData;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CreateOrderActivity extends AppCompatActivity {
+public class CreateOrderActivity extends BaseMapActivity {
 
     private static final String ORDER_TABLE = "order";
     public static final int REQUEST_LOCATION = 123;
     public static final String PARAM_LATITUDE = "latitude";
-    public static final String PARAM_LONGITUDE = "latitude";
+    public static final String PARAM_LONGITUDE = "longitude";
 
     @BindView(R.id.recipient)
     EditText recipient;
 
     @BindView(R.id.address)
     EditText address;
-
-    @BindView(R.id.choose_location)
-    EditText chooseLocation;
 
     @BindView(R.id.phone)
     EditText phone;
@@ -63,22 +56,49 @@ public class CreateOrderActivity extends AppCompatActivity {
     @BindView(R.id.address_layout)
     View addressView;
 
+    @BindView(R.id.map_layout)
+    View mapView;
+
+    @BindView(R.id.add_button)
+    ImageView addButton;
+
+    @BindView(R.id.item_code)
+    EditText itemCode;
+
+    @BindView(R.id.list_item)
+    RecyclerView listItem;
+
+    MapData mapData;
+    ItemCodeAdapter itemAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_order);
 
         ButterKnife.bind(this);
-
+        mapData = new MapData();
         initView();
         initViewListener();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_create_order;
+    }
+
+    @Override
+    protected UiSettings setMapUISetting(GoogleMap googleMap) {
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
+        googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+        googleMap.setBuildingsEnabled(true);
+        return googleMap.getUiSettings();
     }
 
     private void initViewListener() {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                initFakeData();
+                generateCode();
                 sendDataToFirebase(getParam());
 
             }
@@ -86,29 +106,44 @@ public class CreateOrderActivity extends AppCompatActivity {
         addressView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(CreateOrderActivity.this
-                        ,FindAddressActivity.class), REQUEST_LOCATION);
+                Intent intent = new Intent(CreateOrderActivity.this
+                        , FindAddressActivity.class);
+                if (mapData.getPosition() != null) {
+                    intent.putExtra(PARAM_LATITUDE, mapData.getPosition().latitude);
+                    intent.putExtra(PARAM_LATITUDE, mapData.getPosition().longitude);
+                }
+                startActivityForResult(intent, REQUEST_LOCATION);
+            }
+        });
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(itemCode.getText().toString().length() > 0){
+                    itemAdapter.addItem(new ItemData(itemCode.getText().toString()));
+                }else{
+                    itemCode.setError("Need to insert item code");
+                }
             }
         });
     }
 
     private void initView() {
         verifyCodeLayout.setVisibility(View.GONE);
+        if (mapData.getPosition() == null) {
+            mapView.setVisibility(View.GONE);
+        }
+        itemAdapter = ItemCodeAdapter.createInstance();
+        listItem.setLayoutManager(new LinearLayoutManager(this));
+        listItem.setAdapter(itemAdapter);
     }
 
     private MapData getParam() {
 
-        ArrayList<ItemData> listItem = new ArrayList<>();
-        listItem.add(new ItemData("Barang 6"));
-        listItem.add(new ItemData("Barang 7"));
-
-        MapData mapData = new MapData();
         mapData.setAddress(address.getText().toString());
         mapData.setRecipient(recipient.getText().toString());
         mapData.setPhone(phone.getText().toString());
         mapData.setVerifyCode(verifyCode.getText().toString());
-        mapData.setItem(listItem);
-        mapData.setPosition(new LatLng(-6.131138,106.824011));
+        mapData.setItem(itemAdapter.getList());
 
         return mapData;
     }
@@ -134,10 +169,7 @@ public class CreateOrderActivity extends AppCompatActivity {
 
     }
 
-    private void initFakeData() {
-        recipient.setText("Nisie");
-        address.setText("Jalan 4 no 4");
-        phone.setText("08999991149");
+    private void generateCode() {
 
         Random rnd = new Random();
         int n = 100000 + rnd.nextInt(999999);
@@ -151,8 +183,17 @@ public class CreateOrderActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_LOCATION) {
             if (resultCode == RESULT_OK) {
+                mapView.setVisibility(View.VISIBLE);
+                LatLng position = new LatLng(data.getDoubleExtra(PARAM_LATITUDE, 0),
+                        data.getDoubleExtra(PARAM_LONGITUDE, 0));
 
-
+                this.mapData.setPosition(position);
+                if (mapData != null && mapData.getPosition() != null) {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapData.getPosition(), 15f));
+                    mMap.addMarker(new MarkerOptions()
+                            .position(mapData.getPosition())
+                    );
+                }
 
             }
         }

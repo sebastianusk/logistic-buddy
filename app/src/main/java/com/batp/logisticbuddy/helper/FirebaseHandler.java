@@ -36,8 +36,8 @@ public class FirebaseHandler {
     private static final String DRIVER_TABLE = "driver";
     private static final String TAG = FirebaseHandler.class.getSimpleName();
 
-    public static void sendOrder(MapData param, final FirebaseListener listener) {
-        DatabaseReference mFirebaseDatabaseReference;
+    public static void sendOrder(final MapData param, final FirebaseListener listener) {
+        final DatabaseReference mFirebaseDatabaseReference;
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mFirebaseDatabaseReference.child(ORDER_TABLE)
                 .push()
@@ -45,7 +45,20 @@ public class FirebaseHandler {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        listener.onSuccess();
+                        mFirebaseDatabaseReference.child(param.getRecipient()).push()
+                                .setValue(param)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        listener.onSuccess();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        listener.onFailed(e.toString());
+                                    }
+                                });
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -176,8 +189,9 @@ public class FirebaseHandler {
         void onFailed(String error);
     }
 
-    public interface GetOrdersListener{
+    public interface GetOrdersListener {
         void onSuccess(List<MapData> mapData);
+
         void onFailed(String error);
     }
 
