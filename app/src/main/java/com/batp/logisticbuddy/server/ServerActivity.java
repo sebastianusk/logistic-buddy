@@ -62,6 +62,7 @@ public class ServerActivity extends BaseMapActivity {
                         mapDatas.put(String.valueOf(j), orders.get((int) simpleMatrix.get(i,j)));
                     }
                     driverData.setDestinations(mapDatas);
+                    driverDatas.set(i, driverData);
                 }
                 dialog.show();
                 firebaseHandler.storeRoute(driverDatas, new FirebaseHandler.FirebaseListener() {
@@ -94,8 +95,7 @@ public class ServerActivity extends BaseMapActivity {
 
     @Override
     protected UiSettings setMapUISetting(GoogleMap googleMap) {
-//        firebaseHandler = new FirebaseHandler();
-//        firebaseHandler.initDatabaseReferrence();
+        firebaseHandler = new FirebaseHandler();
         driverDatas = new ArrayList<>();
         DriverData data = new DriverData();
         data.setDriverName("Bejo");

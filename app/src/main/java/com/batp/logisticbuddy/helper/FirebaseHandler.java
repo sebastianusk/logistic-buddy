@@ -64,45 +64,49 @@ public class FirebaseHandler {
         });
     }
 
-    public void receiveOrders(final GetOrdersListener listener) {
-//        mFirebaseDatabaseReference.child(ORDER_TABLE)
-//                .addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                        Log.i(TAG, "data shanpshot is " + dataSnapshot.toString());
-//                        Map<String, Object> objectMap = (Map <String, Object>) dataSnapshot.getValue();
-//                        List<MapData> mapDataList = new ArrayList<MapData>();
-//                        for (Object obj : objectMap.values()) {
-//                            if (obj instanceof Map) {
-//                                Map<String, Object> mapObj = (Map<String, Object>) obj;
-//                                mapDataList.add(MapData.convertFromFirebase(mapObj));
-//                            }
-//                        }
-//                        listener.onSuccess(mapDataList);
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {
-//
-//                    }
-//                });
+    public void receiveOrders(final GetOrdersListener listener){
+        DatabaseReference mFirebaseDatabaseReference;
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference.child(ORDER_TABLE)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.i(TAG, "data shanpshot is " + dataSnapshot.toString());
+                        Map<String, Object> objectMap = (Map <String, Object>) dataSnapshot.getValue();
+                        List<MapData> mapDataList = new ArrayList<MapData>();
+                        for (Object obj : objectMap.values()) {
+                            if (obj instanceof Map) {
+                                Map<String, Object> mapObj = (Map<String, Object>) obj;
+                                mapDataList.add(MapData.convertFromFirebase(mapObj));
+                            }
+                        }
+                        listener.onSuccess(mapDataList);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     public void storeRoute(List<DriverData> driverDatas, final FirebaseListener listener) {
-//        mFirebaseDatabaseReference.child(DRIVER_TABLE)
-//                .push()
-//                .setValue(driverDatas)
-//                .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task) {
-//                        listener.onSuccess();
-//                    }
-//                }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//                listener.onFailed(e.toString());
-//            }
-//        });
+        DatabaseReference mFirebaseDatabaseReference;
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference.child(DRIVER_TABLE)
+                .push()
+                .setValue(driverDatas)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        listener.onSuccess();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                listener.onFailed(e.toString());
+            }
+        });
     }
 
     public interface SessionListener {
