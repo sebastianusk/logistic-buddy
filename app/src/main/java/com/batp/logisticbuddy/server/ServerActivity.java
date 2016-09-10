@@ -2,6 +2,8 @@ package com.batp.logisticbuddy.server;
 
 import android.content.Intent;
 import android.location.LocationListener;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -28,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.BindView;
 import butterknife.OnClick;
 
 /**
@@ -142,6 +145,11 @@ public class ServerActivity extends BaseMapActivity {
 
     }
 
+    @BindView(R.id.recycler_view_drawer)
+    RecyclerView recyclerViewDrawer;
+    DrawerAdapter adapter;
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -184,6 +192,27 @@ public class ServerActivity extends BaseMapActivity {
     protected UiSettings setMapUISetting(GoogleMap googleMap) {
         firebaseHandler = new FirebaseHandler();
         driverDatas = new HashMap<>();
+        adapter = new DrawerAdapter(new DrawerAdapter.DrawerListener() {
+            @Override
+            public void onItemClick(int type) {
+                switch (type){
+                    case DrawerAdapter.SET_BASE:
+                        setBase();
+                        break;
+                    case DrawerAdapter.GET_CLIENT:
+                        getClients();
+                        break;
+                    case DrawerAdapter.CALCULATE_ROUTE:
+                        findFastestRoutes();
+                        break;
+                    default:
+                        setBase();
+                }
+            }
+        });
+        recyclerViewDrawer.setAdapter(adapter);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        recyclerViewDrawer.setLayoutManager(linearLayoutManager);
         TruckData data = new TruckData();
         data.setStatus("IDLE");
         addTruck(data);
