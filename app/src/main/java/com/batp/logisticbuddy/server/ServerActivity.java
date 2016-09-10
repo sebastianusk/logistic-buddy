@@ -18,7 +18,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.ejml.simple.SimpleMatrix;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.OnClick;
 
@@ -30,15 +33,14 @@ public class ServerActivity extends BaseMapActivity {
     private static final String TAG = ServerActivity.class.getSimpleName();
     private List<MapData> orders;
     private List<DriverData> driverDatas;
+    private FirebaseHandler firebaseHandler;
 
     @OnClick(R.id.button_get_clients)
     void getClients(){
         // making sure that the maps is ready
         if(mMap != null){
             dialog.show();
-//            FirebaseHandler firebaseHandler = new FirebaseHandler();
-//            firebaseHandler.initDatabaseReferrence();
-//            firebaseHandler.receiveOrders(getListener());
+            firebaseHandler.receiveOrders(getListener());
 
         } else {
             Toast.makeText(this, getString(R.string.map_not_ready), Toast.LENGTH_SHORT).show();
@@ -52,6 +54,29 @@ public class ServerActivity extends BaseMapActivity {
             @Override
             public void onSuccess(SimpleMatrix simpleMatrix) {
                 Log.d(TAG, simpleMatrix.toString());
+                for(int i = 0; i < simpleMatrix.numRows(); i ++){
+                    DriverData driverData = new DriverData();
+                    driverData.setDriverName(driverDatas.get(i).getDriverName());
+                    Map<String, MapData> mapDatas = new HashMap<String, MapData>();
+                    for(int j = 0; j < simpleMatrix.numCols(); j ++){
+                        mapDatas.put(String.valueOf(j), orders.get((int) simpleMatrix.get(i,j)));
+                    }
+                    driverData.setDestinations(mapDatas);
+                }
+                dialog.show();
+                firebaseHandler.storeRoute(driverDatas, new FirebaseHandler.FirebaseListener() {
+                    @Override
+                    public void onSuccess() {
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onFailed(String error) {
+                        dialog.dismiss();
+                        Toast.makeText(ServerActivity.this, error, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
 
             }
 
@@ -69,6 +94,15 @@ public class ServerActivity extends BaseMapActivity {
 
     @Override
     protected UiSettings setMapUISetting(GoogleMap googleMap) {
+        firebaseHandler = new FirebaseHandler();
+        firebaseHandler.initDatabaseReferrence();
+        driverDatas = new ArrayList<>();
+        DriverData data = new DriverData();
+        data.setDriverName("Bejo");
+        driverDatas.add(data);
+        data = new DriverData();
+        data.setDriverName("Paijo");
+        driverDatas.add(data);
         return null;
     }
 
