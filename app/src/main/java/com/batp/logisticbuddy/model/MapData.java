@@ -24,6 +24,7 @@ public class MapData implements Parcelable{
     String phone;
     ArrayList<ItemData> item;
     String verifyCode;
+    String truck;
 
     protected MapData(Parcel in) {
         position = in.readParcelable(LatLng.class.getClassLoader());
@@ -94,6 +95,14 @@ public class MapData implements Parcelable{
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getTruck() {
+        return truck;
+    }
+
+    public void setTruck(String truck) {
+        this.truck = truck;
     }
 
     @Exclude
