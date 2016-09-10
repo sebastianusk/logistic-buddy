@@ -21,6 +21,7 @@ import butterknife.ButterKnife;
 public class ItemCodeAdapter extends RecyclerView.Adapter<ItemCodeAdapter.ViewHolder> {
 
     ArrayList<ItemData> listItem;
+    private boolean isDeleteEnabled = true;
 
     public ItemCodeAdapter(){
         this.listItem = new ArrayList<>();
@@ -43,6 +44,11 @@ public class ItemCodeAdapter extends RecyclerView.Adapter<ItemCodeAdapter.ViewHo
                 notifyDataSetChanged();
             }
         });
+
+        if(isDeleteEnabled)
+            holder.deleteButton.setVisibility(View.VISIBLE);
+        else
+            holder.deleteButton.setVisibility(View.GONE);
     }
 
     @Override
@@ -61,6 +67,16 @@ public class ItemCodeAdapter extends RecyclerView.Adapter<ItemCodeAdapter.ViewHo
 
     public ArrayList<ItemData> getList() {
         return listItem;
+    }
+
+    public void setList(ArrayList<ItemData> item) {
+        this.listItem.clear();
+        this.listItem.addAll(item);
+        notifyDataSetChanged();
+    }
+
+    public void setDeleteEnabled(boolean isDeleteEnabled) {
+        this.isDeleteEnabled = isDeleteEnabled;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{

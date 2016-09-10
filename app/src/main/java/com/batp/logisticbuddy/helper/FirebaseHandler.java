@@ -33,6 +33,7 @@ import rx.schedulers.Schedulers;
  */
 public class FirebaseHandler {
     private static final String ORDER_TABLE = "order";
+    private static final String DRIVER_TABLE = "driver";
     private static final String CLIENT_TABLE = "client";
 
     private static final String TAG = FirebaseHandler.class.getSimpleName();
