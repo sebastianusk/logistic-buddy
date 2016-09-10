@@ -1,11 +1,16 @@
 package com.batp.logisticbuddy.driverapplication;
 
+import android.Manifest;
 import android.app.FragmentManager;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +44,8 @@ import retrofit2.Response;
 /**
  * Created by kris on 9/10/16. Tokopedia
  */
-public class DriverMapsActivity extends BaseMapActivity implements SpeedingResultReceiver.Receiver, InsertOtpDialog.OtpListener{
+public class DriverMapsActivity extends BaseMapActivity implements SpeedingResultReceiver.Receiver,
+        InsertOtpDialog.OtpListener, LocationListener{
 
     private HashMap<String, String> googleParameters;
 
@@ -227,9 +233,11 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fm = getFragmentManager();
-                InsertOtpDialog dialog = InsertOtpDialog.createInstance(customerOTP.get(currentDestinationIndex));
-                dialog.show(fm, "insert_otp_dialog");
+                if(currentDestinationIndex != latLngLists.size()-1){
+                    FragmentManager fm = getFragmentManager();
+                    InsertOtpDialog dialog = InsertOtpDialog.createInstance(customerOTP.get(currentDestinationIndex+1));
+                    dialog.show(fm, "insert_otp_dialog");
+                }
             }
         };
     }
@@ -252,6 +260,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                             locationList.add(location);
                         }
                         fetchDestinationFromGoogleMapApi();
+                        initiateLocationListener();
                     }
 
                     @Override
@@ -297,5 +306,53 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     public void onOtpDone() {
         successFullyDelivered();
         Toast.makeText(this, "OTP DONE", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        LatLng realTimeLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+        driverMarker.position(realTimeLatLng);
+        if(location.distanceTo(locationList.get(currentDestinationIndex + 1)) <  CLOSE_DISTANCE){
+            confirmDeliveredButton.setVisibility(View.VISIBLE);
+            startDriveButton.setVisibility(View.GONE);
+        } else {
+            confirmDeliveredButton.setVisibility(View.GONE);
+            startDriveButton.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    private void initiateLocationListener() {
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Criteria crit = new Criteria();
+        crit.setAccuracy(Criteria.ACCURACY_FINE);
+
+        String provider = locationManager.getBestProvider(crit, true);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestLocationUpdates(provider, 0, 0, this);
     }
 }

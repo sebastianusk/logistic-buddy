@@ -52,6 +52,7 @@
         android:layout_marginBottom="@dimen/margin_small"
         android:gravity="center_horizontal"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
         android:text="Konfirm Yaaa"/>
 
     <TextView
@@ -61,6 +62,7 @@
         android:text="TEST SUKSES JIIIR"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:visibility="gone"
         android:textSize="28sp" />
 
 </RelativeLayout>
