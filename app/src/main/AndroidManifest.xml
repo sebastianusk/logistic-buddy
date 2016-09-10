@@ -26,7 +26,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_mapv2_key" />
 
-        <activity android:name=".client.FindAddressActivity"/>
+        <activity android:name=".client.FindAddressActivity" />
+        <activity android:name=".client.DriverDetailActivity"></activity>
     </application>
 
 </manifest>

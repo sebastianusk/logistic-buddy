@@ -11,7 +11,6 @@ import android.widget.EditText;
 
 import com.batp.logisticbuddy.R;
 import com.batp.logisticbuddy.map.BaseMapActivity;
-import com.batp.logisticbuddy.model.MapData;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -20,10 +19,10 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.io.IOException;
@@ -41,8 +40,6 @@ public class FindAddressActivity extends BaseMapActivity implements GoogleApiCli
     @BindView(R.id.address)
     EditText addressEditText;
 
-    PlaceAutocompleteFragment autoComplete;
-    MapData locationPass;
     private GoogleApiClient mGoogleApiClient;
 
     private static final String PARAM_FINDADDRESS = "PARAM_FINDADDRESS";
@@ -81,8 +78,8 @@ public class FindAddressActivity extends BaseMapActivity implements GoogleApiCli
             @Override
             public void onClick(View view) {
                 Intent intent = getIntent();
-                intent.putExtra(CreateOrderActivity.PARAM_ADDRESS, addressEditText.getText().toString());
-                intent.putExtra(CreateOrderActivity.PARAM_ADDRESS, addressEditText.getText().toString());
+                intent.putExtra(CreateOrderActivity.PARAM_LATITUDE, mMap.getCameraPosition().target.latitude);
+                intent.putExtra(CreateOrderActivity.PARAM_LONGITUDE, mMap.getCameraPosition().target.longitude);
 
                 setResult(RESULT_OK, intent);
                 finish();
@@ -134,6 +131,18 @@ public class FindAddressActivity extends BaseMapActivity implements GoogleApiCli
     }
 
     @Override
+    public void onMapReady(GoogleMap googleMap) {
+        super.onMapReady(googleMap);
+        if (getIntent().getExtras()!= null && getIntent().getExtras().getDouble(CreateOrderActivity.PARAM_LATITUDE,0) != 0
+                && getIntent().getExtras().getDouble(CreateOrderActivity.PARAM_LONGITUDE,0) != 0)
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+                    getIntent().getExtras().getDouble(CreateOrderActivity.PARAM_LATITUDE),
+                    getIntent().getExtras().getDouble(CreateOrderActivity.PARAM_LONGITUDE)
+            ), 10f));
+
+    }
+
+    @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
@@ -147,7 +156,7 @@ public class FindAddressActivity extends BaseMapActivity implements GoogleApiCli
                 LatLngBounds.Builder builder = new LatLngBounds.Builder();
                 builder.include(place.getLatLng());
                 LatLngBounds bounds = builder.build();
-                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds,DEFAULT_MAPS_PADDING));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, DEFAULT_MAPS_PADDING));
                 addressEditText.setText(place.getAddress());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
