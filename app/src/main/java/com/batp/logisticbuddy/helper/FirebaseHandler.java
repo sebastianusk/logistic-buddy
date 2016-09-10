@@ -53,6 +53,7 @@ public class FirebaseHandler {
         mFirebaseDatabaseReference.child(ORDER_TABLE)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
+
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Log.i(TAG, "data shanpshot is " + dataSnapshot.toString());
 
