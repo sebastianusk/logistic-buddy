@@ -3,6 +3,8 @@ package com.batp.logisticbuddy.helper;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.batp.logisticbuddy.LoginActivity;
+
 /**
  * Created by nisie on 9/10/16.
  */
@@ -14,12 +16,14 @@ public class SessionHandler {
     public static final String MASTER = "master@batp.com";
     private static final String SESSION = "SESSION";
     private static final String ROLE = "ROLE";
+    private static final String USER_ID = "USER_ID";
 
-    public static void setSession(Context context, String role) {
+    public static void setSession(Context context, String role, String userId) {
         SharedPreferences sharedpreferences = context.getSharedPreferences(SESSION, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
 
         editor.putString(ROLE, role);
+        editor.putString(USER_ID,userId);
         editor.apply();
     }
 
@@ -32,4 +36,18 @@ public class SessionHandler {
         //TODO GET DRIVER ID
         return "driver1";
     }
+
+    public static String getUserId(Context context) {
+        return context.getSharedPreferences(SESSION, Context.MODE_PRIVATE).getString(USER_ID,"");
+    }
+
+    public static void setSession(Context context, String role) {
+        SharedPreferences sharedpreferences = context.getSharedPreferences(SESSION, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+
+        editor.putString(ROLE, role);
+        editor.apply();
+    }
+
+
 }

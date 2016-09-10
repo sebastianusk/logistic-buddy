@@ -9,4 +9,6 @@
     <string name="map_not_ready">Map is not Ready</string>
     <string name="find_fastest_routes">Find Fastest Routes</string>
     <string name="success_route">Success Calculating Route</string>
+    <string name="set_home_base">Set Home Base</string>
+    <string name="manage_truck">Manage Truck</string>
 </resources>

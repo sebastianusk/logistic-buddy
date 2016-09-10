@@ -36,13 +36,6 @@
         android:background="@drawable/cards_layout"
         android:orientation="horizontal">
 
-        <!--<fragment-->
-            <!--android:id="@+id/autocomplete"-->
-            <!--android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"/>-->
-
         <EditText
             android:id="@+id/address"
             android:layout_width="0dp"

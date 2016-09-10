@@ -100,6 +100,11 @@ public class CreateOrderActivity extends BaseMapActivity {
         return null;
     }
 
+    @Override
+    protected boolean goToPosition() {
+        return false;
+    }
+
     private void initViewListener() {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,7 +155,7 @@ public class CreateOrderActivity extends BaseMapActivity {
         mapData.setPhone(phone.getText().toString());
         mapData.setVerifyCode(verifyCode.getText().toString());
         mapData.setItem(itemAdapter.getList());
-
+        mapData.setUserId(FirebaseHandler.getCurrentSessionUserId());
         return mapData;
     }
 

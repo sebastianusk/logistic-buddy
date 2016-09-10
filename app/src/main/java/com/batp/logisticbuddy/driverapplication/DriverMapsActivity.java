@@ -84,6 +84,11 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     }
 
     @Override
+    protected boolean goToPosition() {
+        return false;
+    }
+
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         super.onMapReady(googleMap);
 
