@@ -9,6 +9,7 @@ import android.widget.Button;
 
 import com.batp.logisticbuddy.client.CreateOrderActivity;
 import com.batp.logisticbuddy.client.OrderDetailActivity;
+import com.batp.logisticbuddy.driverapplication.DriverMapsActivity;
 import com.batp.logisticbuddy.helper.SessionHandler;
 import com.batp.logisticbuddy.server.ServerActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -96,6 +97,18 @@ public class MenuActivity extends AppCompatActivity {
                 startActivity(new Intent(MenuActivity.this, OrderDetailActivity.class));
             }
         });
+        startDriving.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MenuActivity.this, DriverMapsActivity.class));
+            }
+        });
+//        admin.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                startActivity(new Intent(MenuActivity.this, MapActivity.class));
+//            }
+//        });
     }
 
     private void initializeMenu(Context context) {

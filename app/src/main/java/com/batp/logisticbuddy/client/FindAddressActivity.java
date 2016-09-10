@@ -138,6 +138,11 @@ public class FindAddressActivity extends BaseMapActivity implements GoogleApiCli
     }
 
     @Override
+    protected boolean goToPosition() {
+        return false;
+    }
+
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         super.onMapReady(googleMap);
         if (getIntent().getExtras()!= null && getIntent().getExtras().getDouble(CreateOrderActivity.PARAM_LATITUDE,0) != 0

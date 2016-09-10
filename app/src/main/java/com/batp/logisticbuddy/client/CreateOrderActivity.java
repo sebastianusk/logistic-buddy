@@ -100,6 +100,11 @@ public class CreateOrderActivity extends BaseMapActivity {
         return null;
     }
 
+    @Override
+    protected boolean goToPosition() {
+        return false;
+    }
+
     private void initViewListener() {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override

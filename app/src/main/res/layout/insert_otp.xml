@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/otp_holder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Insert OTP here"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <TextView
+        android:id="@+id/confirm_otp_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SEND OTP"
+        android:textSize="28sp"/>
+
+</LinearLayout>
