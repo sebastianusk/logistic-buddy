@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET"/>
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,10 +19,11 @@
         </activity>
         <activity android:name=".MenuActivity" />
         <activity android:name=".CreateOrderActivity"></activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_mapv2_key" />
     </application>
 
-    <meta-data
-        android:name="com.google.android.geo.API_KEY"
-        android:value="@string/google_mapv2_key" />
 
 </manifest>
