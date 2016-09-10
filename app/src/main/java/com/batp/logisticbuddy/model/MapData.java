@@ -35,8 +35,11 @@ public class MapData implements Parcelable{
         address = in.readString();
         recipient = in.readString();
         phone = in.readString();
+        item = in.readArrayList(ItemData.class.getClassLoader());
         verifyCode = in.readString();
+        truck = in.readString();
         userId = in.readString();
+        key = in.readString();
     }
 
     public MapData() {
@@ -202,8 +205,12 @@ public class MapData implements Parcelable{
         parcel.writeString(address);
         parcel.writeString(recipient);
         parcel.writeString(phone);
+        parcel.writeList(item);
         parcel.writeString(verifyCode);
+        parcel.writeString(truck);
         parcel.writeString(userId);
+        parcel.writeString(key);
+
     }
 
     public void setKey(String key) {

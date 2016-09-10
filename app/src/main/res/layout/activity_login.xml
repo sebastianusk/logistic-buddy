@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:background="@color/colorPrimary">
+    android:background="@color/dark_blue"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,55 +19,67 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         tools:context=".LoginActivity">
 
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="24dp"
-            android:src="@drawable/common_google_signin_btn_icon_dark" />
-
-        <android.support.design.widget.TextInputLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColorHint="@color/white"
-            android:foregroundTint="@color/white"
-            android:layout_marginBottom="8dp">
-            <EditText android:id="@+id/username"
+            android:layout_gravity="center"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_centerHorizontal="true"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="-20dp"
+                android:src="@drawable/ic_logisticbuddy_logo_white" />
+
+            <TextView
                 android:layout_width="match_parent"
+                android:gravity="center"
                 android:layout_height="wrap_content"
-                android:inputType="text"
+                android:layout_below="@id/logo"
+                android:text="Your reliable logistic solutions"
                 android:textColor="@color/white"
-                android:hint="Username" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_marginTop="-100dp"
+                android:textStyle="italic" />
+        </RelativeLayout>
+
+
+        <EditText
+            android:id="@+id/username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:drawableLeft="@drawable/ic_supervisor_account_black_40dp"
+            android:drawablePadding="@dimen/margin_vs"
+            android:hint="Username"
+            android:inputType="text"
+            android:padding="@dimen/margin_vs" />
 
         <!-- Password Label -->
-        <android.support.design.widget.TextInputLayout
+
+        <EditText
+            android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColorHint="@color/white"
-            android:foregroundTint="@color/white"
-            android:layout_marginBottom="8dp">
-            <EditText android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:textColor="@color/white"
-                android:hint="Password"/>
-        </android.support.design.widget.TextInputLayout>
+            android:background="@color/white"
+            android:drawableLeft="@drawable/ic_https_black_40dp"
+            android:drawablePadding="@dimen/margin_vs"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:padding="@dimen/margin_vs" />
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_login"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
-            android:textColor="@color/white"
-            android:background="@color/colorPrimaryDark"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/white_border"
             android:padding="12dp"
-            android:text="Login"/>
+            android:text="Login"
+            android:textColor="@color/white" />
 
     </LinearLayout>
 </ScrollView>
