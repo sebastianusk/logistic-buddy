@@ -73,6 +73,12 @@ public class MenuActivity extends AppCompatActivity {
                 startActivity(new Intent(MenuActivity.this, CreateOrderActivity.class));
             }
         });
+        admin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MenuActivity.this, ServerActivity.class));
+            }
+        });
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,18 +86,6 @@ public class MenuActivity extends AppCompatActivity {
                 startActivity(new Intent(MenuActivity.this, LoginActivity.class));
             }
         });
-        admin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MenuActivity.this, ServerActivity.class));
-            }
-        });
-//        admin.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                startActivity(new Intent(MenuActivity.this, MapActivity.class));
-//            }
-//        });
     }
 
     private void initializeMenu(Context context) {
@@ -99,18 +93,22 @@ public class MenuActivity extends AppCompatActivity {
             case SessionHandler.DRIVER:
                 startDriving.setVisibility(View.VISIBLE);
                 createOrder.setVisibility(View.GONE);
+                admin.setVisibility(View.GONE);
                 break;
             case SessionHandler.CLIENT:
                 startDriving.setVisibility(View.GONE);
                 createOrder.setVisibility(View.VISIBLE);
+                admin.setVisibility(View.GONE);
                 break;
             case SessionHandler.SERVER:
                 startDriving.setVisibility(View.GONE);
                 createOrder.setVisibility(View.GONE);
+                admin.setVisibility(View.VISIBLE);
                 break;
             default:
                 startDriving.setVisibility(View.VISIBLE);
                 createOrder.setVisibility(View.VISIBLE);
+                admin.setVisibility(View.VISIBLE);
                 break;
         }
     }

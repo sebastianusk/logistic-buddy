@@ -46,8 +46,6 @@ public class LoginActivity extends AppCompatActivity {
                 final ProgressDialog dialog = new ProgressDialog(LoginActivity.this);
                 dialog.setTitle("Please wait...");
                 dialog.show();
-                username.setText("master@batp.com");
-                password.setText("master");
                 checkRole();
                 FirebaseHandler.signInWithEmailAndPassword(username.getText().toString(),
                         password.getText().toString(), new FirebaseHandler.FirebaseListener() {
@@ -72,10 +70,12 @@ public class LoginActivity extends AppCompatActivity {
     private void checkRole() {
         switch (username.getText().toString()){
             case SessionHandler.DRIVER:
-                SessionHandler.setSession(this, SessionHandler.DRIVER);
+                String driverId = FirebaseHandler.getCurrentSessionDriverId();
+                SessionHandler.setSession(this, SessionHandler.DRIVER, driverId);
                 break;
             case SessionHandler.CLIENT:
-                SessionHandler.setSession(this, SessionHandler.CLIENT);
+                String userId = FirebaseHandler.getCurrentSessionUserId();
+                SessionHandler.setSession(this, SessionHandler.CLIENT, userId);
                 break;
             case SessionHandler.SERVER:
                 SessionHandler.setSession(this,SessionHandler.SERVER);

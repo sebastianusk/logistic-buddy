@@ -2,6 +2,7 @@ package com.batp.logisticbuddy.client;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -94,6 +95,11 @@ public class CreateOrderActivity extends BaseMapActivity {
         return googleMap.getUiSettings();
     }
 
+    @Override
+    protected LocationListener getLocationListener() {
+        return null;
+    }
+
     private void initViewListener() {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,7 +150,7 @@ public class CreateOrderActivity extends BaseMapActivity {
         mapData.setPhone(phone.getText().toString());
         mapData.setVerifyCode(verifyCode.getText().toString());
         mapData.setItem(itemAdapter.getList());
-
+        mapData.setUserId(FirebaseHandler.getCurrentSessionUserId());
         return mapData;
     }
 

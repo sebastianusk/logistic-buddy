@@ -34,6 +34,8 @@ import rx.schedulers.Schedulers;
 public class FirebaseHandler {
     private static final String ORDER_TABLE = "order";
     private static final String DRIVER_TABLE = "driver";
+    private static final String CLIENT_TABLE = "client";
+
     private static final String TAG = FirebaseHandler.class.getSimpleName();
 
     public static void sendOrder(final MapData param, final FirebaseListener listener) {
@@ -45,7 +47,7 @@ public class FirebaseHandler {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        mFirebaseDatabaseReference.child(param.getRecipient()).push()
+                        mFirebaseDatabaseReference.child(CLIENT_TABLE).child(getCurrentSessionUserId()).push()
                                 .setValue(param)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
@@ -177,6 +179,50 @@ public class FirebaseHandler {
 
             }
         });
+    }
+
+    public static String getCurrentSessionUserId() {
+        FirebaseAuth mFirebaseAuth;
+        FirebaseUser mFirebaseUser;
+
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        return mFirebaseUser!= null? "user" + mFirebaseUser.getUid() : "";
+    }
+
+    public static String getCurrentSessionDriverId() {
+        FirebaseAuth mFirebaseAuth;
+        FirebaseUser mFirebaseUser;
+
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        return mFirebaseUser!= null? "truck" + mFirebaseUser.getUid() : "";
+    }
+
+    public static void getOrderClient(String userId, final GetOrdersListener listener) {
+        DatabaseReference mFirebaseDatabaseReference;
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference.child(CLIENT_TABLE).child(userId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.i(TAG, "data shanpshot is " + dataSnapshot.toString());
+                        Map<String, Object> objectMap = (Map <String, Object>) dataSnapshot.getValue();
+                        List<MapData> mapDataList = new ArrayList<MapData>();
+                        for (Object obj : objectMap.values()) {
+                            if (obj instanceof Map) {
+                                Map<String, Object> mapObj = (Map<String, Object>) obj;
+                                mapDataList.add(MapData.convertFromFirebase(mapObj));
+                            }
+                        }
+                        listener.onSuccess(mapDataList);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     public interface SessionListener {
