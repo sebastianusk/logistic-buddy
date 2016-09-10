@@ -66,7 +66,7 @@ public class VehicleRoutingImpl implements VehicleRouting {
 
             // objective value = minimize total distance traveled
             Double neighborObj;
-            Double bestObj = 9999.0;
+            Double bestObj = 999999999999999999999999999.0;
 
 
             // INITIALIZATION PHASE
@@ -112,7 +112,7 @@ public class VehicleRoutingImpl implements VehicleRouting {
 
             // IMPROVEMENT PHASE
             bestNeighSolution = new SimpleMatrix(numVehicle, numClients + 2);
-            Double bestNeighObj = 9999.0;
+            Double bestNeighObj = 999999999999999999999999999.0;
 
             int counter = 0;
 

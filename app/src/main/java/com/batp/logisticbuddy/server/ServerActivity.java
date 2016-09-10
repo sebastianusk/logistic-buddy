@@ -73,22 +73,26 @@ public class ServerActivity extends BaseMapActivity {
                     driverData.setStatus("IDLE");
                     Map<String, MapData> mapDatas = new HashMap<>();
                     for(int j = 0; j < simpleMatrix.numCols(); j ++){
-                        MapData mapData = orders.get((int) simpleMatrix.get(i, j));
-                        if(j != 0)
+                        MapData mapData;
+                        if(simpleMatrix.get(i, j) == 0){
+                            mapData = baseMapData;
+                        } else {
+                            mapData = orders.get((int) simpleMatrix.get(i, j) - 1);
                             mapData.setTruck(TRUCK + i);
+                        }
                         mapDatas.put(String.valueOf(j), mapData);
                     }
                     driverData.setDestinations(mapDatas);
                     modifyTruck(i, driverData);
                 }
 
-                firebaseHandler.updateOrders(orders, new FirebaseHandler.FirebaseListener() {
+                firebaseHandler.storeRoute(driverDatas, new FirebaseHandler.FirebaseListener() {
                     @Override
                     public void onSuccess() {
                         Toast.makeText(ServerActivity.this,
                                 ServerActivity.this.getString(R.string.success_route),
                                 Toast.LENGTH_SHORT).show();
-                        compositeSubscription.add(firebaseHandler.storeRoute(driverDatas, new FirebaseHandler.FirebaseListener() {
+                        firebaseHandler.updateOrders(orders, new FirebaseHandler.FirebaseListener() {
                             @Override
                             public void onSuccess() {
                                 dialog.dismiss();
@@ -102,7 +106,7 @@ public class ServerActivity extends BaseMapActivity {
                                 dialog.dismiss();
                                 Toast.makeText(ServerActivity.this, error, Toast.LENGTH_SHORT).show();
                             }
-                        }));
+                        });
                     }
 
                     @Override

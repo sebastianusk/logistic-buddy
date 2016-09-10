@@ -135,6 +135,8 @@ public class MapData implements Parcelable{
         marker.setPhone((String) mapObj.get("phone"));
         marker.setRecipient((String) mapObj.get("recipient"));
         marker.setVerifyCode((String) mapObj.get("verifyCode"));
+        marker.setUserId((String) mapObj.get("userId"));
+        marker.setKey((String) mapObj.get("key"));
         marker.setPosition(converPositionFromFirebase(mapObj));
         marker.setItem(convertItemsFromFirebase(mapObj));
         return marker;
