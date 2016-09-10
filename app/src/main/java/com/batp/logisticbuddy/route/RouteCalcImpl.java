@@ -100,7 +100,7 @@ public class RouteCalcImpl implements RouteCalc {
 
         List<Double> clientDemand = new ArrayList<>();
         clientDemand.add(0.0);
-        for(int i = 0; i < distanceMatrix.getRows().size(); i++){
+        for(int i = 0; i < distanceMatrix.getRows().size() - 1; i++){
             clientDemand.add(5.0);
         }
 

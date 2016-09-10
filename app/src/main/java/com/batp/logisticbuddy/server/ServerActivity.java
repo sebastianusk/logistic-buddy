@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.ejml.simple.SimpleMatrix;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,12 @@ public class ServerActivity extends BaseMapActivity {
     void findFastestRoutes(){
         dialog.show();
         RouteCalc routeCalc = new RouteCalcImpl(getString(R.string.google_direction_key));
-        compositeSubscription.add(routeCalc.calculateRoute(orders, driverDatas.size(), new RouteCalc.RouteCalcListener() {
+        List<MapData> allPoints = new ArrayList<>();
+        allPoints.add(baseMapData);
+        for (MapData data: orders) {
+            allPoints.add(data);
+        }
+        compositeSubscription.add(routeCalc.calculateRoute(allPoints, driverDatas.size(), new RouteCalc.RouteCalcListener() {
             @Override
             public void onSuccess(SimpleMatrix simpleMatrix) {
                 Log.d(TAG, simpleMatrix.toString());
@@ -79,10 +85,24 @@ public class ServerActivity extends BaseMapActivity {
                 firebaseHandler.updateOrders(orders, new FirebaseHandler.FirebaseListener() {
                     @Override
                     public void onSuccess() {
-                        dialog.dismiss();
                         Toast.makeText(ServerActivity.this,
                                 ServerActivity.this.getString(R.string.success_route),
                                 Toast.LENGTH_SHORT).show();
+                        compositeSubscription.add(firebaseHandler.storeRoute(driverDatas, new FirebaseHandler.FirebaseListener() {
+                            @Override
+                            public void onSuccess() {
+                                dialog.dismiss();
+                                Toast.makeText(ServerActivity.this,
+                                        ServerActivity.this.getString(R.string.success_route),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onFailed(String error) {
+                                dialog.dismiss();
+                                Toast.makeText(ServerActivity.this, error, Toast.LENGTH_SHORT).show();
+                            }
+                        }));
                     }
 
                     @Override
@@ -92,21 +112,7 @@ public class ServerActivity extends BaseMapActivity {
                     }
                 });
 
-                compositeSubscription.add(firebaseHandler.storeRoute(driverDatas, new FirebaseHandler.FirebaseListener() {
-                    @Override
-                    public void onSuccess() {
-                        dialog.dismiss();
-                        Toast.makeText(ServerActivity.this,
-                                ServerActivity.this.getString(R.string.success_route),
-                                Toast.LENGTH_SHORT).show();
-                    }
 
-                    @Override
-                    public void onFailed(String error) {
-                        dialog.dismiss();
-                        Toast.makeText(ServerActivity.this, error, Toast.LENGTH_SHORT).show();
-                    }
-                }));
             }
             @Override
             public void onFailed(String error) {

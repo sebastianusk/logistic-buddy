@@ -33,7 +33,6 @@ import rx.schedulers.Schedulers;
  */
 public class FirebaseHandler {
     private static final String ORDER_TABLE = "order";
-    private static final String DRIVER_TABLE = "driver";
     private static final String CLIENT_TABLE = "client";
 
     private static final String TAG = FirebaseHandler.class.getSimpleName();
@@ -71,39 +70,29 @@ public class FirebaseHandler {
             public void onFailure(@NonNull Exception e) {
                 listener.onFailed(e.toString());
             }
-        })
-        ;
+        });
     }
 
     public static void updateOrder(final MapData param, final FirebaseListener listener) {
+
         final DatabaseReference mFirebaseDatabaseReference;
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mFirebaseDatabaseReference.child(ORDER_TABLE)
+        mFirebaseDatabaseReference.child(CLIENT_TABLE)
+                .child(param.getUserId())
+                .child(param.getKey())
                 .setValue(param)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        mFirebaseDatabaseReference.child(param.getRecipient())
-                                .setValue(param)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        listener.onSuccess();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        listener.onFailed(e.toString());
-                                    }
-                                });
+                        listener.onSuccess();
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                listener.onFailed(e.toString());
-            }
-        });
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        listener.onFailed(e.toString());
+                    }
+                });
     }
 
     public static void getBaseLocation(final GetOrderListener listener) {
