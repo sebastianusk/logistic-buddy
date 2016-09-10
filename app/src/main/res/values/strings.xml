@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">LogisticBuddy</string>
+    <string name="google_mapv2_key">AIzaSyBt4l8SeXlnbnM298XiIGpw_eg2XiQRAJs</string>
+    <string name="google_direction_key">AIzaSyASwOGk-18zSIkBPpTpc4FN_8ve3RZ5x0c</string>
 </resources>
