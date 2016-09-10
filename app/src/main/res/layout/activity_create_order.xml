@@ -1,111 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".client.CreateOrderActivity">
+    android:layout_height="match_parent">
 
-    <android.support.design.widget.TextInputLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        tools:context=".client.CreateOrderActivity">
 
-        <EditText
-            android:id="@+id/recipient"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Recipient Name"
-            android:inputType="textCapWords" />
-    </android.support.design.widget.TextInputLayout>
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
 
-    <RelativeLayout
-        android:id="@+id/layout_value_location"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_small"
-        android:layout_marginTop="@dimen/margin_vs">
+            <EditText
+                android:id="@+id/recipient"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Recipient Name"
+                android:imeOptions="actionNext"
+                android:inputType="textCapWords">
 
-        <ImageView
-            android:id="@+id/layout_right"
-            android:layout_width="@dimen/img_thumb_s"
-            android:layout_height="@dimen/img_thumb_s"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_keyboard_arrow_right_black_24dp" />
+                <requestFocus/>
+            </EditText>
+        </android.support.design.widget.TextInputLayout>
 
-        <EditText
-            android:id="@+id/address"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_vs"
-            android:layout_marginLeft="@dimen/margin_vs"
-            android:layout_marginRight="@dimen/margin_vs"
-            android:layout_marginStart="@dimen/margin_vs"
-            android:layout_toLeftOf="@id/layout_right"
-            android:layout_toStartOf="@id/layout_right"
-            android:layout_centerVertical="true"
-            android:clickable="true"
-            android:focusable="false"
-            android:hint="@string/choose_location"
-            />
+            android:layout_marginBottom="8dp">
 
-    </RelativeLayout>
+            <EditText
+                android:id="@+id/address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Address"
+                android:inputType="textCapWords"
+                android:maxLines="10" />
+        </android.support.design.widget.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp">
-
-        <EditText
-            android:id="@+id/phone"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Phone Number"
-            android:inputType="number" />
-    </android.support.design.widget.TextInputLayout>
+            android:layout_marginBottom="8dp">
 
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/btn_submit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
-        android:text="Submit"
-        android:textColor="@color/white" />
+            <EditText
+                android:id="@+id/phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Phone Number"
+                android:imeOptions="actionDone"
+                android:inputType="number" />
+        </android.support.design.widget.TextInputLayout>
 
-    <LinearLayout
-        android:id="@+id/verify_code_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="20dp"
-        android:orientation="vertical">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/item_code"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:hint="Item Code"
+                android:textAllCaps="true"
+                android:imeOptions="actionDone"
+                android:inputType="textCapCharacters" />
+
+            <ImageView
+                android:id="@+id/add_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add_black_40dp"
+                />
+
+        </LinearLayout>
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="Your Verification Code"
-            android:textStyle="bold" />
+            android:text="List Item to Ship"/>
 
-        <EditText
-            android:id="@+id/verify_code"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+        <RelativeLayout
+            android:id="@+id/address_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:enabled="false"
-            android:gravity="center"
-            android:hint="Your Verification Number"
-            android:inputType="number"
-            android:text="123456"
-            android:textSize="40sp" />
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_vs">
+
+            <ImageView
+                android:id="@+id/arrow_right"
+                android:layout_width="@dimen/img_thumb_s"
+                android:layout_height="@dimen/img_thumb_s"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_keyboard_arrow_right_black_24dp" />
+
+            <TextView
+                android:id="@+id/choose_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/margin_vs"
+                android:layout_marginRight="@dimen/margin_vs"
+                android:layout_toLeftOf="@id/arrow_right"
+                android:layout_toStartOf="@id/arrow_right"
+                android:hint="@string/choose_location"
+                android:maxLines="10" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/map_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <fragment
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.MapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" />
+        </RelativeLayout>
+
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btn_submit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:background="@color/colorAccent"
+            android:text="Submit"
+            android:textColor="@color/white" />
+
+        <LinearLayout
+            android:id="@+id/verify_code_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Your Verification Code"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/verify_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:enabled="false"
+                android:gravity="center"
+                android:hint="Your Verification Number"
+                android:inputType="number"
+                android:text="123456"
+                android:textSize="40sp" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</ScrollView>
