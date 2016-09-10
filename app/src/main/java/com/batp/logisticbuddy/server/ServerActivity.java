@@ -23,7 +23,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.ejml.simple.SimpleMatrix;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,7 +115,7 @@ public class ServerActivity extends BaseMapActivity {
         }));
     }
 
-    @OnClick(R.id.botton_set_base)
+    @OnClick(R.id.button_set_base)
     void setBase(){
         Intent intent = new Intent(ServerActivity.this
                 , FindAddressActivity.class);
@@ -126,6 +125,11 @@ public class ServerActivity extends BaseMapActivity {
             intent.putExtra(CreateOrderActivity.PARAM_LONGITUDE, baseMapData.getPosition().longitude);
         }
         startActivityForResult(intent, REQUEST_LOCATION);
+    }
+
+    @OnClick(R.id.button_manage_truck)
+    void setTruck(){
+
     }
 
     @Override
