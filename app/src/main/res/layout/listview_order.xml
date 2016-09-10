@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/cards_layout">
+
+    <TextView
+        android:id="@+id/address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_vs"/>
+
+    <TextView
+        android:id="@+id/phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_vs"
+        android:layout_below="@id/address"/>
+
+    <TextView
+        android:id="@+id/delivery_status_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_vs"
+        android:layout_below="@id/phone"
+        android:text="Delivery status : "/>
+
+    <TextView
+        android:id="@+id/delivery_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/phone"
+        android:layout_toEndOf="@id/delivery_status_title"
+        android:layout_toRightOf="@id/delivery_status_title"
+        android:padding="@dimen/margin_vs"/>
+
+    <TextView
+        android:id="@+id/expected_time_arrive_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_vs"
+        android:layout_below="@id/delivery_status"
+        android:text="Expected Time arrive : "/>
+
+    <TextView
+        android:id="@+id/expected_time_arrive"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/delivery_status"
+        android:layout_toEndOf="@id/expected_time_arrive_title"
+        android:layout_toRightOf="@id/expected_time_arrive_title"
+        android:padding="@dimen/margin_vs"/>
+
+    <TextView
+        android:id="@+id/verify_code_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_vs"
+        android:layout_below="@id/expected_time_arrive"
+        android:text="Verification Code : "/>
+
+    <TextView
+        android:id="@+id/verify_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/expected_time_arrive"
+        android:layout_toEndOf="@id/verify_code_title"
+        android:layout_toRightOf="@id/verify_code_title"
+        android:padding="@dimen/margin_vs"/>
+
+</RelativeLayout>
