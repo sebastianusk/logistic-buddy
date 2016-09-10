@@ -3,6 +3,8 @@ package com.batp.logisticbuddy;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.google.android.gms.maps.SupportMapFragment;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
