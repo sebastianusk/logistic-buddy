@@ -1,4 +1,4 @@
-package com.batp.logisticbuddy;
+package com.batp.logisticbuddy.helper;
 
 import android.content.Context;
 import android.content.SharedPreferences;

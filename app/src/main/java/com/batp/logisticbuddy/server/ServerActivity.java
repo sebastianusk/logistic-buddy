@@ -11,7 +11,7 @@ import com.google.android.gms.maps.UiSettings;
 public class ServerActivity extends BaseMapActivity {
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main;
+        return R.layout.activity_server;
     }
 
     @Override
