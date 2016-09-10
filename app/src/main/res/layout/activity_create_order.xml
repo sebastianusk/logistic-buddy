@@ -24,19 +24,39 @@
             android:inputType="textCapWords" />
     </android.support.design.widget.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <RelativeLayout
+        android:id="@+id/layout_value_location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp">
+        android:layout_marginBottom="@dimen/margin_small"
+        android:layout_marginTop="@dimen/margin_vs">
+
+        <ImageView
+            android:id="@+id/layout_right"
+            android:layout_width="@dimen/img_thumb_s"
+            android:layout_height="@dimen/img_thumb_s"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_keyboard_arrow_right_black_24dp" />
 
         <EditText
             android:id="@+id/address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Address"
-            android:inputType="textImeMultiLine" />
-    </android.support.design.widget.TextInputLayout>
+            android:layout_marginEnd="@dimen/margin_vs"
+            android:layout_marginLeft="@dimen/margin_vs"
+            android:layout_marginRight="@dimen/margin_vs"
+            android:layout_marginStart="@dimen/margin_vs"
+            android:layout_toLeftOf="@id/layout_right"
+            android:layout_toStartOf="@id/layout_right"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="@string/choose_location"
+            />
+
+    </RelativeLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"

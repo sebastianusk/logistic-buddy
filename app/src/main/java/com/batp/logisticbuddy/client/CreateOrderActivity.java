@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.batp.logisticbuddy.R;
+import com.batp.logisticbuddy.helper.FirebaseHandler;
 import com.batp.logisticbuddy.model.ItemData;
 import com.batp.logisticbuddy.model.MapData;
 import com.google.android.gms.maps.model.LatLng;
@@ -44,7 +46,7 @@ public class CreateOrderActivity extends AppCompatActivity {
     @BindView(R.id.verify_code_layout)
     View verifyCodeLayout;
 
-    DatabaseReference mFirebaseDatabaseReference;
+    FirebaseHandler firebaseHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +55,9 @@ public class CreateOrderActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        initFirebase();
+        firebaseHandler = new FirebaseHandler();
+        firebaseHandler.initDatabaseReferrence();
         initView();
-    }
-
-    private void initFirebase() {
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
     }
 
     private void initView() {
@@ -91,18 +90,24 @@ public class CreateOrderActivity extends AppCompatActivity {
     }
 
     private void sendDataToFirebase(MapData param) {
-        ProgressDialog dialog = new ProgressDialog(CreateOrderActivity.this);
+        final ProgressDialog dialog = new ProgressDialog(CreateOrderActivity.this);
         dialog.setTitle("Please wait...");
         dialog.show();
-        mFirebaseDatabaseReference.child(ORDER_TABLE)
-                .push()
-                .setValue(param)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        finish();
-                    }
-                });
+        firebaseHandler.sendOrder(param, new FirebaseHandler.FirebaseListener() {
+            @Override
+            public void onSuccess() {
+                dialog.dismiss();
+                finish();
+            }
+
+            @Override
+            public void onFailed(String error) {
+                dialog.dismiss();
+                Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
     }
 
     private void initFakeData() {
