@@ -18,7 +18,7 @@ import com.google.android.gms.maps.UiSettings;
 public abstract class BaseMapActivity  extends Activity implements OnMapReadyCallback {
 
     private static final int PERMISSION_ACCESS_FINE_LOCATION = 10000;
-    private GoogleMap mMap;
+    protected GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
