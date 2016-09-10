@@ -77,7 +77,7 @@ public class DriverIntentService extends IntentService implements SensorEventLis
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        locationManager.requestLocationUpdates(provider, 1000, 10, this);
+        locationManager.requestLocationUpdates(provider, 0, 0, this);
 
     }
 
