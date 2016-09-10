@@ -2,6 +2,7 @@ package com.batp.logisticbuddy.map;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -14,6 +15,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 
 import butterknife.ButterKnife;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by Toped18 on 9/10/2016.
@@ -22,12 +24,18 @@ public abstract class BaseMapActivity  extends AppCompatActivity implements OnMa
 
     private static final int PERMISSION_ACCESS_FINE_LOCATION = 10000;
     protected GoogleMap mMap;
+    protected ProgressDialog dialog;
+    protected CompositeSubscription compositeSubscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
         ButterKnife.bind(this);
+
+        ButterKnife.bind(this);
+
+        dialog = new ProgressDialog(this);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
@@ -54,6 +62,22 @@ public abstract class BaseMapActivity  extends AppCompatActivity implements OnMa
                     PERMISSION_ACCESS_FINE_LOCATION);
         } else {
             mMap.setMyLocationEnabled(true);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (compositeSubscription == null || compositeSubscription.isUnsubscribed()) {
+            compositeSubscription = new CompositeSubscription();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(compositeSubscription != null){
+            compositeSubscription.unsubscribe();
         }
     }
 }
