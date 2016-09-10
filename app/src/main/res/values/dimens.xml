@@ -6,5 +6,6 @@
     <dimen name="margin_ms">8dp</dimen>
     <dimen name="margin_vvs">3.3dp</dimen>
     <dimen name="margin_small">10dp</dimen>
+    <dimen name="margin_med">15dp</dimen>
     <dimen name="img_thumb_s">40dp</dimen>
 </resources>
