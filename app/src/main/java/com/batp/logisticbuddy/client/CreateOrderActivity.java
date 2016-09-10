@@ -1,5 +1,6 @@
-package com.batp.logisticbuddy;
+package com.batp.logisticbuddy.client;
 
+import android.app.ProgressDialog;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.batp.logisticbuddy.R;
 import com.batp.logisticbuddy.model.ItemData;
 import com.batp.logisticbuddy.model.MapData;
 import com.google.android.gms.maps.model.LatLng;
@@ -68,6 +70,7 @@ public class CreateOrderActivity extends AppCompatActivity {
 
             }
         });
+        verifyCodeLayout.setVisibility(View.GONE);
     }
 
     private MapData getParam() {
@@ -88,6 +91,9 @@ public class CreateOrderActivity extends AppCompatActivity {
     }
 
     private void sendDataToFirebase(MapData param) {
+        ProgressDialog dialog = new ProgressDialog(CreateOrderActivity.this);
+        dialog.setTitle("Please wait...");
+        dialog.show();
         mFirebaseDatabaseReference.child(ORDER_TABLE)
                 .push()
                 .setValue(param)

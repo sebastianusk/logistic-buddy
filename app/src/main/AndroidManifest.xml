@@ -18,7 +18,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".MenuActivity" />
-        <activity android:name=".CreateOrderActivity"></activity>
+        <activity android:name=".client.CreateOrderActivity"></activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
