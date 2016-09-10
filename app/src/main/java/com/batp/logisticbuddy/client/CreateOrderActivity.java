@@ -177,7 +177,7 @@ public class CreateOrderActivity extends BaseMapActivity {
             @Override
             public void onSuccess() {
                 dialog.dismiss();
-                Dialog finishDialog = new Dialog(CreateOrderActivity.this);
+                final Dialog finishDialog = new Dialog(CreateOrderActivity.this);
                 finishDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 finishDialog.setCancelable(false);
                 finishDialog.setContentView(R.layout.finish_order_layout);
@@ -189,7 +189,7 @@ public class CreateOrderActivity extends BaseMapActivity {
                 dialogButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        dialog.dismiss();
+                        finishDialog.dismiss();
                         finish();
                     }
                 });
