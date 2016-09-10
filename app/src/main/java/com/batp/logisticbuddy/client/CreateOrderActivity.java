@@ -46,7 +46,8 @@ public class CreateOrderActivity extends AppCompatActivity {
     @BindView(R.id.verify_code_layout)
     View verifyCodeLayout;
 
-    FirebaseHandler firebaseHandler;
+    @BindView(R.id.address_layout)
+    View addressView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,12 +56,11 @@ public class CreateOrderActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        firebaseHandler = new FirebaseHandler();
-        firebaseHandler.initDatabaseReferrence();
         initView();
+        initViewListener();
     }
 
-    private void initView() {
+    private void initViewListener() {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,6 +69,15 @@ public class CreateOrderActivity extends AppCompatActivity {
 
             }
         });
+        addressView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                
+            }
+        });
+    }
+
+    private void initView() {
         verifyCodeLayout.setVisibility(View.GONE);
     }
 
@@ -93,7 +102,7 @@ public class CreateOrderActivity extends AppCompatActivity {
         final ProgressDialog dialog = new ProgressDialog(CreateOrderActivity.this);
         dialog.setTitle("Please wait...");
         dialog.show();
-        firebaseHandler.sendOrder(param, new FirebaseHandler.FirebaseListener() {
+        FirebaseHandler.sendOrder(param, new FirebaseHandler.FirebaseListener() {
             @Override
             public void onSuccess() {
                 dialog.dismiss();

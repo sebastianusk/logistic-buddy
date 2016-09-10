@@ -1,5 +1,8 @@
 package com.batp.logisticbuddy.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.Exclude;
@@ -13,7 +16,7 @@ import java.util.Map;
  * Created by nisie on 9/10/16.
  */
 @IgnoreExtraProperties
-public class MapData {
+public class MapData implements Parcelable{
 
     LatLng position;
     String address;
@@ -21,6 +24,29 @@ public class MapData {
     String phone;
     ArrayList<ItemData> item;
     String verifyCode;
+
+    protected MapData(Parcel in) {
+        position = in.readParcelable(LatLng.class.getClassLoader());
+        address = in.readString();
+        recipient = in.readString();
+        phone = in.readString();
+        verifyCode = in.readString();
+    }
+
+    public MapData() {
+    }
+
+    public static final Creator<MapData> CREATOR = new Creator<MapData>() {
+        @Override
+        public MapData createFromParcel(Parcel in) {
+            return new MapData(in);
+        }
+
+        @Override
+        public MapData[] newArray(int size) {
+            return new MapData[size];
+        }
+    };
 
     public LatLng getPosition() {
         return this.position;
@@ -109,8 +135,24 @@ public class MapData {
 
     private static LatLng converPositionFromFirebase(Map<String, Object> mapObj) {
         return new LatLng(
-                (Double) ((HashMap<String, Double>) mapObj.get("position")).get("latitude")
-                , (Double) ((HashMap<String, Double>) mapObj.get("position")).get("longitude")
+                ((HashMap<String, Double>) mapObj.get("position")).get("latitude")
+                , ((HashMap<String, Double>) mapObj.get("position")).get("longitude")
         );
+    }
+
+    @Exclude
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Exclude
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeParcelable(position, i);
+        parcel.writeString(address);
+        parcel.writeString(recipient);
+        parcel.writeString(phone);
+        parcel.writeString(verifyCode);
     }
 }

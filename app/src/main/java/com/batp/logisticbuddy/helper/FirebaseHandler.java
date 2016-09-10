@@ -18,16 +18,9 @@ import com.google.firebase.database.FirebaseDatabase;
 public class FirebaseHandler {
     private static final String ORDER_TABLE = "order";
 
-    FirebaseAuth mFirebaseAuth;
-    FirebaseUser mFirebaseUser;
-
-    DatabaseReference mFirebaseDatabaseReference;
-
-    public void initDatabaseReferrence() {
+    public static void sendOrder(MapData param, final FirebaseListener listener) {
+        DatabaseReference mFirebaseDatabaseReference;
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-    }
-
-    public void sendOrder(MapData param, final FirebaseListener listener) {
         mFirebaseDatabaseReference.child(ORDER_TABLE)
                 .push()
                 .setValue(param)
@@ -54,7 +47,10 @@ public class FirebaseHandler {
         void onFailed(String error);
     }
 
-    public void signInWithEmailAndPassword(String userName, String password, final FirebaseListener listener) {
+    public static void signInWithEmailAndPassword(String userName, String password, final FirebaseListener listener) {
+
+        FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
+
         mFirebaseAuth.signInWithEmailAndPassword(userName, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -69,7 +65,11 @@ public class FirebaseHandler {
         });
     }
 
-    public void initializeAuth(SessionListener listener) {
+    public static void initializeAuth(SessionListener listener) {
+
+        FirebaseAuth mFirebaseAuth;
+        FirebaseUser mFirebaseUser;
+
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         if (mFirebaseUser != null) {
