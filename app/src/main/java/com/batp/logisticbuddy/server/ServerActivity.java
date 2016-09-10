@@ -96,7 +96,6 @@ public class ServerActivity extends BaseMapActivity {
     @Override
     protected UiSettings setMapUISetting(GoogleMap googleMap) {
         firebaseHandler = new FirebaseHandler();
-        firebaseHandler.initDatabaseReferrence();
         driverDatas = new ArrayList<>();
         DriverData data = new DriverData();
         data.setDriverName("Bejo");

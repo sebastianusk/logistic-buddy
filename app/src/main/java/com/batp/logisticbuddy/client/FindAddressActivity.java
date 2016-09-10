@@ -81,8 +81,6 @@ public class FindAddressActivity extends BaseMapActivity implements GoogleApiCli
             @Override
             public void onClick(View view) {
                 Intent intent = getIntent();
-                intent.putExtra(CreateOrderActivity.PARAM_ADDRESS, addressEditText.getText().toString());
-                intent.putExtra(CreateOrderActivity.PARAM_ADDRESS, addressEditText.getText().toString());
 
                 setResult(RESULT_OK, intent);
                 finish();
