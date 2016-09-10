@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "2266165582",
+    "firebase_url": "https://logisticbuddy.firebaseio.com",
+    "project_id": "logisticbuddy",
+    "storage_bucket": "logisticbuddy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:2266165582:android:9d59f1a1a5c96265",
+        "android_client_info": {
+          "package_name": "com.batp.logisticbuddy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "2266165582-t7st8k905g3cdslkisct0fl1pbee6fmm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAS2RI89tDNkjbOuNQejhuZ5KcJzLVTe1M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
