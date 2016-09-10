@@ -13,6 +13,8 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 
+import butterknife.ButterKnife;
+
 /**
  * Created by Toped18 on 9/10/2016.
  */
@@ -24,8 +26,8 @@ public abstract class BaseMapActivity  extends AppCompatActivity implements OnMa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(getLayoutId());
+        ButterKnife.bind(this);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);

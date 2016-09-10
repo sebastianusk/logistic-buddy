@@ -36,17 +36,25 @@
         android:background="@drawable/cards_layout"
         android:orientation="horizontal">
 
-        <fragment
-            android:id="@+id/autocomplete"
-            android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+        <!--<fragment-->
+            <!--android:id="@+id/autocomplete"-->
+            <!--android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"/>-->
+
+        <EditText
+            android:id="@+id/address"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
 
         <RelativeLayout
             android:id="@+id/pointer_submit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
             android:background="@drawable/green_button">
 
             <ImageView
