@@ -5,11 +5,11 @@ import android.os.Bundle;
 
 import com.batp.logisticbuddy.R;
 
-public class DriverDetailActivity extends AppCompatActivity {
+public class OrderDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_driver_detail);
+        setContentView(R.layout.activity_order_detail);
     }
 }

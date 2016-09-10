@@ -27,7 +27,7 @@
             android:value="@string/google_mapv2_key" />
 
         <activity android:name=".client.FindAddressActivity" />
-        <activity android:name=".client.DriverDetailActivity"></activity>
+        <activity android:name=".client.OrderDetailActivity"></activity>
     </application>
 
 </manifest>
