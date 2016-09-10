@@ -3,6 +3,7 @@ package com.batp.logisticbuddy.driverapplication;
 import android.app.FragmentManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -15,10 +16,13 @@ import com.batp.logisticbuddy.driverapplication.model.DriverModel;
 import com.batp.logisticbuddy.driverapplication.model.Leg;
 import com.batp.logisticbuddy.driverapplication.service.GoogleMapApiService;
 import com.batp.logisticbuddy.fragment.InsertOtpDialog;
+import com.batp.logisticbuddy.helper.FirebaseHandler;
 import com.batp.logisticbuddy.map.BaseMapActivity;
+import com.batp.logisticbuddy.model.MapData;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -26,6 +30,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,15 +50,25 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     private TextView startDriveButton;
     private TextView confirmDeliveredButton;
 
+    private FirebaseHandler firebaseHandler;
+
     private int currentDestinationIndex;
 
     private Location currentDriverLocation;
 
+    private Location destinationLocation;
+
     private static final float CLOSE_DISTANCE = 150;
 
-    private List<Location> locationLists;
+    private List<LatLng> latLngLists;
+
+    private List<Location> locationList;
 
     private List<String> customerOTP;
+
+    private List<MarkerOptions> appointedMarkers;
+
+    private MarkerOptions driverMarker;
 
     @Override
     protected int getLayoutId() {
@@ -66,8 +81,15 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     }
 
     @Override
+    protected LocationListener getLocationListener() {
+        return null;
+    }
+
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         super.onMapReady(googleMap);
+
+        firebaseHandler = new FirebaseHandler();
 
         currentDestinationIndex = 0;
 
@@ -75,9 +97,15 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         y = (TextView) findViewById(R.id.y_axis);
         z = (TextView) findViewById(R.id.z_axis);
 
-        locationLists = new ArrayList<>();
+        appointedMarkers = new ArrayList<>();
+
+        latLngLists = new ArrayList<>();
+
+        locationList = new ArrayList<>();
 
         customerOTP = new ArrayList<>();
+
+        driverMarker = new MarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 
         startDriveButton = (TextView) findViewById(R.id.driver_start_button);
         startDriveButton.setOnClickListener(onStartButtonClickedListener());
@@ -90,26 +118,27 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         DriverIntentService.startBackgroundService(this, receiver);
     }
 
-    private void fetchDataFromGoogleMapApi(List<Location> locationList) {
+    private void fetchDataFromGoogleMapApi(List<LatLng> locationList) {
         GoogleMapApiInterface mapInterface = GoogleMapApiService.getClient().create(GoogleMapApiInterface.class);
         googleParameters.clear();
+        mMap.clear();
 
-        googleParameters.put("origin", String.valueOf(locationList.get(0).getLatitude())
+        googleParameters.put("origin", String.valueOf(locationList.get(0).latitude)
                 + ","
-                +String.valueOf(locationList.get(0).getLongitude()));
-        googleParameters.put("destination", String.valueOf(locationList.get(locationList.size()-1).getLatitude())
+                +String.valueOf(locationList.get(0).longitude));
+        googleParameters.put("destination", String.valueOf(locationList.get(locationList.size()-1).latitude)
                 + ","
-                +String.valueOf(locationList.get(locationList.size()-1).getLongitude()));
+                +String.valueOf(locationList.get(locationList.size()-1).longitude));
         googleParameters.put("mode", "driving");
-        googleParameters.put("key", "AIzaSyDhAonRJef0uzBDxcznv9gyi5TT33Aei6M");
+        googleParameters.put("key", getString(R.string.google_direction_key));
         locationList.remove(0);
         locationList.remove(locationList.size()-1);
         String waypoints = "";
 
         for(int waypointIndex = 0; waypointIndex < locationList.size(); waypointIndex++) {
-            waypoints = waypoints + locationList.get(waypointIndex).getLatitude()
+            waypoints = waypoints + locationList.get(waypointIndex).latitude
                     + ","
-                    + locationList.get(waypointIndex).getLongitude();
+                    + locationList.get(waypointIndex).longitude;
             if(waypointIndex != locationList.size() -1) {
                 waypoints = waypoints + "|";
             }
@@ -202,7 +231,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                 googleParameters = new HashMap<>();
 /*                googleParameters.put("origin", "-6.1904982,106.7976599");
                 googleParameters.put("destination", "-6.190699,106.7975051");*/
-                List<Location> dummyLocationLists = new ArrayList<>();
+/*                List<Location> dummyLocationLists = new ArrayList<>();
                 Location origin = new Location("originmarker");
                 origin.setLatitude(-6.1904982);
                 origin.setLongitude(106.7976599);
@@ -219,9 +248,26 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                 dummyLocationLists.add(origin);
                 dummyLocationLists.add(location1);
                 dummyLocationLists.add(location2);
-                dummyLocationLists.add(destination);
-                locationLists = dummyLocationLists;
-                fetchDataFromGoogleMapApi(dummyLocationLists);
+                dummyLocationLists.add(destination);*/
+                firebaseHandler.getOrderLocation(new FirebaseHandler.GetDriverDesignatedLocations() {
+                    @Override
+                    public void onSuccessList(List<MapData> mapDataList) {
+                        for (int i = 0; i< mapDataList.size(); i++){
+                            MapData convertedMapData = MapData.convertFromFirebase((Map<String, Object>) mapDataList.get(i));
+                            latLngLists.add(convertedMapData.getPosition());
+                            Location location = new Location("dummy_provider");
+                            location.setLatitude(convertedMapData.getPosition().latitude);
+                            location.setLongitude(convertedMapData.getPosition().longitude);
+                            locationList.add(location);
+                        }
+                        fetchDataFromGoogleMapApi(latLngLists);
+                    }
+
+                    @Override
+                    public void onFailed() {
+
+                    }
+                });
             }
         };
     }
@@ -239,7 +285,13 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                 break;
             case 11:
                 currentDriverLocation = resultData.getParcelable(DriverIntentService.LOCATION_KEY);
-                if(currentDriverLocation.distanceTo(locationLists.get(currentDestinationIndex)) <  CLOSE_DISTANCE){
+                LatLng realTimeLatLng = null;
+                if (currentDriverLocation != null) {
+                    realTimeLatLng = new LatLng(currentDriverLocation.getLatitude(), currentDriverLocation.getLongitude());
+                    driverMarker.position(realTimeLatLng);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(realTimeLatLng));
+                }
+                if(currentDriverLocation.distanceTo(locationList.get(currentDestinationIndex)) <  CLOSE_DISTANCE){
                     confirmDeliveredButton.setVisibility(View.VISIBLE);
                     startDriveButton.setVisibility(View.GONE);
                 } else {

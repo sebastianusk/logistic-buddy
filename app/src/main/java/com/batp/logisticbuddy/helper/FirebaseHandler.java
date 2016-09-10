@@ -68,6 +68,24 @@ public class FirebaseHandler {
         });
     }
 
+    public void getOrderLocation(final GetDriverDesignatedLocations listener) {
+        DatabaseReference mFireBaseDataReference;
+        mFireBaseDataReference = FirebaseDatabase.getInstance().getReference();
+        mFireBaseDataReference.child("truck100").child("destinations")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        List<MapData> mapDataList = (List<MapData>) dataSnapshot.getValue();
+                        listener.onSuccessList(mapDataList);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
     public void receiveOrders(final GetOrdersListener listener){
         DatabaseReference mFirebaseDatabaseReference;
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
@@ -193,6 +211,12 @@ public class FirebaseHandler {
         void onSuccess(List<MapData> mapData);
 
         void onFailed(String error);
+    }
+
+    public interface GetDriverDesignatedLocations {
+        void onSuccessList(List<MapData> mapDatas);
+
+        void onFailed();
     }
 
     public static void signInWithEmailAndPassword(String userName, String password, final FirebaseListener listener) {
