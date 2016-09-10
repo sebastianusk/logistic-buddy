@@ -20,12 +20,13 @@
         </activity>
         <activity android:name=".MenuActivity" />
         <activity android:name=".client.CreateOrderActivity" />
+        <activity android:name=".server.ServerActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_mapv2_key" />
 
-        <activity android:name=".client.FindAddressActivity"></activity>
+        <activity android:name=".client.FindAddressActivity"/>
     </application>
 
 </manifest>

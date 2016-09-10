@@ -1,6 +1,7 @@
 package com.batp.logisticbuddy.client;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import butterknife.ButterKnife;
 public class CreateOrderActivity extends AppCompatActivity {
 
     private static final String ORDER_TABLE = "order";
+    private static final int REQUEST_LOCATION = 123;
     @BindView(R.id.recipient)
     EditText recipient;
 
@@ -72,7 +74,15 @@ public class CreateOrderActivity extends AppCompatActivity {
         addressView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
+                startActivityForResult(new Intent(CreateOrderActivity.this
+                        ,FindAddressActivity.class), REQUEST_LOCATION);
+            }
+        });
+        address.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(new Intent(CreateOrderActivity.this
+                        ,FindAddressActivity.class), REQUEST_LOCATION);
             }
         });
     }
