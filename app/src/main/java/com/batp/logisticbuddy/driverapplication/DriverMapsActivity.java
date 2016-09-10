@@ -252,9 +252,10 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(currentDestinationIndex != latLngLists.size()-1){
+                if(currentDestinationIndex != mapDatasAssigned.size()-1){
                     FragmentManager fm = getFragmentManager();
-                    InsertOtpDialog dialog = InsertOtpDialog.createInstance(customerOTP.get(currentDestinationIndex+1));
+                    InsertOtpDialog dialog = InsertOtpDialog.createInstance(
+                            mapDatasAssigned.get(currentDestinationIndex+1).getVerifyCode());
                     dialog.show(fm, "insert_otp_dialog");
                 }
             }
@@ -333,7 +334,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     public void onLocationChanged(Location location) {
         LatLng realTimeLatLng = new LatLng(location.getLatitude(), location.getLongitude());
         driverMarker.position(realTimeLatLng);
-        if(location.distanceTo(locationList.get(currentDestinationIndex + 1)) <  CLOSE_DISTANCE){
+        if(location.distanceTo(mapDatasAssigned.get(currentDestinationIndex + 1).convertToPosition()) <  CLOSE_DISTANCE){
             confirmDeliveredButton.setVisibility(View.VISIBLE);
             startDriveButton.setVisibility(View.GONE);
         } else {
