@@ -37,6 +37,21 @@
         android:textSize="28sp"
         android:background="@android:color/holo_blue_light"
         android:text="Mulai Coooy"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/margin_small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/driver_confirm_shipment_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="28sp"
+        android:background="@android:color/holo_blue_light"
+        android:visibility="gone"
+        android:layout_marginBottom="@dimen/margin_small"
+        android:gravity="center_horizontal"
+        android:layout_alignParentBottom="true"
+        android:text="Konfirm Yaaa"/>
+
 </RelativeLayout>

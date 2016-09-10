@@ -41,6 +41,8 @@ public class DriverIntentService extends IntentService implements SensorEventLis
     public static final String SENSOR_Y_AXIS = "ySensorKey";
     public static final String SENSOR_Z_AXIS = "zSensorKey";
 
+    public static final String LOCATION_KEY = "location_key";
+
     public DriverIntentService() {
         super("Location");
     }
@@ -75,7 +77,7 @@ public class DriverIntentService extends IntentService implements SensorEventLis
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        locationManager.requestLocationUpdates(provider, 0, 0, this);
+        locationManager.requestLocationUpdates(provider, 1000, 10, this);
 
     }
 
@@ -95,7 +97,9 @@ public class DriverIntentService extends IntentService implements SensorEventLis
 
     @Override
     public void onLocationChanged(Location location) {
-
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(LOCATION_KEY, location);
+        receiverListener.send(SpeedingResultReceiver.LOCATION_CHANGE_RESULT_CODE, bundle);
     }
 
     @Override

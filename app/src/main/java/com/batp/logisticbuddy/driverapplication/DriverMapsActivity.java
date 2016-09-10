@@ -1,17 +1,20 @@
 package com.batp.logisticbuddy.driverapplication;
 
+import android.app.FragmentManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.batp.logisticbuddy.R;
 import com.batp.logisticbuddy.driverapplication.api.GoogleMapApiInterface;
 import com.batp.logisticbuddy.driverapplication.model.DriverModel;
 import com.batp.logisticbuddy.driverapplication.model.Leg;
 import com.batp.logisticbuddy.driverapplication.service.GoogleMapApiService;
+import com.batp.logisticbuddy.fragment.InsertOtpDialog;
 import com.batp.logisticbuddy.map.BaseMapActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,16 +33,27 @@ import retrofit2.Response;
 /**
  * Created by kris on 9/10/16. Tokopedia
  */
-public class DriverMapsActivity extends BaseMapActivity implements SpeedingResultReceiver.Receiver{
+public class DriverMapsActivity extends BaseMapActivity implements SpeedingResultReceiver.Receiver, InsertOtpDialog.OtpListener{
 
     private HashMap<String, String> googleParameters;
 
     private SpeedingResultReceiver receiver;
 
-    TextView x;
-    TextView y;
-    TextView z;
-    TextView startDriveButton;
+    private TextView x;
+    private TextView y;
+    private TextView z;
+    private TextView startDriveButton;
+    private TextView confirmDeliveredButton;
+
+    private int currentDestinationIndex;
+
+    private Location currentDriverLocation;
+
+    private static final float CLOSE_DISTANCE = 150;
+
+    private List<Location> locationLists;
+
+    private List<String> customerOTP;
 
     @Override
     protected int getLayoutId() {
@@ -55,12 +69,21 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     public void onMapReady(GoogleMap googleMap) {
         super.onMapReady(googleMap);
 
+        currentDestinationIndex = 0;
+
         x = (TextView) findViewById(R.id.x_axis);
         y = (TextView) findViewById(R.id.y_axis);
         z = (TextView) findViewById(R.id.z_axis);
 
+        locationLists = new ArrayList<>();
+
+        customerOTP = new ArrayList<>();
+
         startDriveButton = (TextView) findViewById(R.id.driver_start_button);
         startDriveButton.setOnClickListener(onStartButtonClickedListener());
+
+        confirmDeliveredButton = (TextView) findViewById(R.id.driver_confirm_shipment_button);
+        confirmDeliveredButton.setOnClickListener(onConfirmButtonClickedListener());
 
         receiver = new SpeedingResultReceiver(new Handler());
         receiver.setReceiver(this);
@@ -70,10 +93,17 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     private void fetchDataFromGoogleMapApi(List<Location> locationList) {
         GoogleMapApiInterface mapInterface = GoogleMapApiService.getClient().create(GoogleMapApiInterface.class);
         googleParameters.clear();
-        googleParameters.put("origin", "-6.1904982,106.7976599");
-        googleParameters.put("destination", "-6.190699,106.7975051");
+
+        googleParameters.put("origin", String.valueOf(locationList.get(0).getLatitude())
+                + ","
+                +String.valueOf(locationList.get(0).getLongitude()));
+        googleParameters.put("destination", String.valueOf(locationList.get(locationList.size()-1).getLatitude())
+                + ","
+                +String.valueOf(locationList.get(locationList.size()-1).getLongitude()));
         googleParameters.put("mode", "driving");
         googleParameters.put("key", "AIzaSyDhAonRJef0uzBDxcznv9gyi5TT33Aei6M");
+        locationList.remove(0);
+        locationList.remove(locationList.size()-1);
         String waypoints = "";
 
         for(int waypointIndex = 0; waypointIndex < locationList.size(); waypointIndex++) {
@@ -104,7 +134,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
 
                         PolylineOptions polylineOptions = new PolylineOptions()
                                 .addAll(decodePoly(leg.getSteps().get(j).getPolyline().getPoints()))
-                                .width(15)
+                                .width(10)
                                 .color(Color.BLUE)
                                 .geodesic(true);
 
@@ -154,16 +184,15 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         return poly;
     }
 
-    @Override
-    public void onReceiveResult(int resultCode, Bundle resultData) {
-        if(resultCode == 10){
-            if(Double.parseDouble(x.getText().toString()) < Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_X_AXIS, "0")))
-                x.setText(resultData.getString(DriverIntentService.SENSOR_X_AXIS, "0"));
-            if(Double.parseDouble(y.getText().toString()) < Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Y_AXIS, "0")))
-                y.setText(resultData.getString(DriverIntentService.SENSOR_Y_AXIS, "0"));
-            if(Double.parseDouble(z.getText().toString()) < Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0")))
-                z.setText(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0"));
-        }
+    private View.OnClickListener onConfirmButtonClickedListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getFragmentManager();
+                InsertOtpDialog dialog = InsertOtpDialog.createInstance(customerOTP.get(currentDestinationIndex));
+                dialog.show(fm, "insert_otp_dialog");
+            }
+        };
     }
 
     private View.OnClickListener onStartButtonClickedListener() {
@@ -171,17 +200,58 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
             @Override
             public void onClick(View v) {
                 googleParameters = new HashMap<>();
+/*                googleParameters.put("origin", "-6.1904982,106.7976599");
+                googleParameters.put("destination", "-6.190699,106.7975051");*/
                 List<Location> dummyLocationLists = new ArrayList<>();
+                Location origin = new Location("originmarker");
+                origin.setLatitude(-6.1904982);
+                origin.setLongitude(106.7976599);
+                Location destination = new Location("destinationmarker");
+                destination.setLatitude(-6.190699);
+                destination.setLongitude(106.7975051);
                 Location location1 = new Location("dummyLocation1");
                 location1.setLatitude(-6.1915241);
                 location1.setLongitude(106.7975194);
                 Location location2 = new Location("dummyLocation2");
                 location2.setLatitude(-6.1922012);
                 location2.setLongitude(106.7968999);
+
+                dummyLocationLists.add(origin);
                 dummyLocationLists.add(location1);
                 dummyLocationLists.add(location2);
+                dummyLocationLists.add(destination);
+                locationLists = dummyLocationLists;
                 fetchDataFromGoogleMapApi(dummyLocationLists);
             }
         };
+    }
+
+    @Override
+    public void onReceiveResult(int resultCode, Bundle resultData) {
+        switch(resultCode) {
+            case 10 :
+                if(Double.parseDouble(x.getText().toString()) < Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_X_AXIS, "0")))
+                    x.setText(resultData.getString(DriverIntentService.SENSOR_X_AXIS, "0"));
+                if(Double.parseDouble(y.getText().toString()) < Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Y_AXIS, "0")))
+                    y.setText(resultData.getString(DriverIntentService.SENSOR_Y_AXIS, "0"));
+                if(Double.parseDouble(z.getText().toString()) < Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0")))
+                    z.setText(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0"));
+                break;
+            case 11:
+                currentDriverLocation = resultData.getParcelable(DriverIntentService.LOCATION_KEY);
+                if(currentDriverLocation.distanceTo(locationLists.get(currentDestinationIndex)) <  CLOSE_DISTANCE){
+                    confirmDeliveredButton.setVisibility(View.VISIBLE);
+                    startDriveButton.setVisibility(View.GONE);
+                } else {
+                    confirmDeliveredButton.setVisibility(View.GONE);
+                    startDriveButton.setVisibility(View.VISIBLE);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onOtpDone() {
+        Toast.makeText(this, "OTP DONE", Toast.LENGTH_LONG).show();
     }
 }
