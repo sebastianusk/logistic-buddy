@@ -2,4 +2,11 @@
     <string name="app_name">LogisticBuddy</string>
     <string name="google_mapv2_key">AIzaSyBt4l8SeXlnbnM298XiIGpw_eg2XiQRAJs</string>
     <string name="google_direction_key">AIzaSyASwOGk-18zSIkBPpTpc4FN_8ve3RZ5x0c</string>
+    <string name="choose_location">Choose location</string>
+    <string name="find_location">Find location</string>
+    <string name="please_wait">Please wait...</string>
+    <string name="find_client_button">Cari Client</string>
+    <string name="map_not_ready">Map is not Ready</string>
+    <string name="find_fastest_routes">Find Fastest Routes</string>
+    <string name="success_route">Success Calculating Route</string>
 </resources>

@@ -21,6 +21,8 @@ public class SpeedingResultReceiver extends ResultReceiver{
 
     public static int SPEEDING_RESULT_CODE = 10;
 
+    public static int LOCATION_CHANGE_RESULT_CODE = 11;
+
     private Receiver receiver;
 
     public SpeedingResultReceiver(Handler handler) {

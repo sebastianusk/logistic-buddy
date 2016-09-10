@@ -3,7 +3,11 @@
     package="com.batp.logisticbuddy">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_GPS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,12 +22,25 @@
             </intent-filter>
         </activity>
         <activity android:name=".MenuActivity" />
-        <activity android:name=".CreateOrderActivity"></activity>
+        <activity android:name=".client.CreateOrderActivity" />
+        <activity android:name=".server.ServerActivity" />
+
+        <activity android:name=".driverapplication.DriverMapsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <service android:name=".driverapplication.DriverIntentService"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_mapv2_key" />
-    </application>
 
+        <activity android:name=".client.FindAddressActivity" />
+        <activity android:name=".client.DriverDetailActivity"></activity>
+    </application>
 
 </manifest>

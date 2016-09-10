@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
+import com.batp.logisticbuddy.client.CreateOrderActivity;
+import com.batp.logisticbuddy.driverapplication.DriverMapsActivity;
+import com.batp.logisticbuddy.helper.SessionHandler;
+import com.batp.logisticbuddy.server.ServerActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -76,6 +79,18 @@ public class MenuActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mFirebaseAuth.signOut();
                 startActivity(new Intent(MenuActivity.this, LoginActivity.class));
+            }
+        });
+        admin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MenuActivity.this, ServerActivity.class));
+            }
+        });
+        startDriving.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MenuActivity.this, DriverMapsActivity.class));
             }
         });
 //        admin.setOnClickListener(new View.OnClickListener() {
