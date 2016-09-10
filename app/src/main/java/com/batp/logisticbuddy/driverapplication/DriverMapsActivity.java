@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.widget.TextView;
 
 import com.batp.logisticbuddy.R;
@@ -38,6 +39,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     TextView x;
     TextView y;
     TextView z;
+    TextView startDriveButton;
 
     @Override
     protected int getLayoutId() {
@@ -57,17 +59,8 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         y = (TextView) findViewById(R.id.y_axis);
         z = (TextView) findViewById(R.id.z_axis);
 
-        googleParameters = new HashMap<>();
-        List<Location> dummyLocationLists = new ArrayList<>();
-        Location location1 = new Location("dummyLocation1");
-        location1.setLatitude(-6.1915241);
-        location1.setLongitude(106.7975194);
-        Location location2 = new Location("dummyLocation2");
-        location2.setLatitude(-6.1922012);
-        location2.setLongitude(106.7968999);
-        dummyLocationLists.add(location1);
-        dummyLocationLists.add(location2);
-        fetchDataFromGoogleMapApi(dummyLocationLists);
+        startDriveButton = (TextView) findViewById(R.id.driver_start_button);
+        startDriveButton.setOnClickListener(onStartButtonClickedListener());
 
         receiver = new SpeedingResultReceiver(new Handler());
         receiver.setReceiver(this);
@@ -97,16 +90,16 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         call.enqueue(new Callback<DriverModel>() {
             @Override
             public void onResponse(retrofit2.Call<DriverModel> call, Response<DriverModel> response) {
+                Leg startLeg = response.body().getRoutes().get(0).getLegs().get(0);
+                LatLng startLatLng = new LatLng(startLeg.getStartLocation().getLat(), startLeg.getStartLocation().getLng());
+                mMap.addMarker(new MarkerOptions().position(startLatLng));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(startLatLng));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
                 for(int i = 0; i<response.body().getRoutes().get(0).getLegs().size(); i++) {
                     Leg leg = response.body().getRoutes().get(0).getLegs().get(i);
-                    LatLng startLatLng = new LatLng(leg.getStartLocation().getLat(), leg.getStartLocation().getLng());
                     LatLng endLatLng = new LatLng(leg.getEndLocation().getLat(), leg.getEndLocation().getLng());
-                    mMap.addMarker(new MarkerOptions().position(startLatLng));
                     mMap.addMarker(new MarkerOptions().position(endLatLng).title("Route " + String.valueOf(i)));
-                    if(i == 0){
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(startLatLng));
-                        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-                    }
+
                     for (int j =0; j < leg.getSteps().size(); j++) {
 
                         PolylineOptions polylineOptions = new PolylineOptions()
@@ -171,5 +164,24 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
             if(Double.parseDouble(z.getText().toString()) < Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0")))
                 z.setText(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0"));
         }
+    }
+
+    private View.OnClickListener onStartButtonClickedListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                googleParameters = new HashMap<>();
+                List<Location> dummyLocationLists = new ArrayList<>();
+                Location location1 = new Location("dummyLocation1");
+                location1.setLatitude(-6.1915241);
+                location1.setLongitude(106.7975194);
+                Location location2 = new Location("dummyLocation2");
+                location2.setLatitude(-6.1922012);
+                location2.setLongitude(106.7968999);
+                dummyLocationLists.add(location1);
+                dummyLocationLists.add(location2);
+                fetchDataFromGoogleMapApi(dummyLocationLists);
+            }
+        };
     }
 }
