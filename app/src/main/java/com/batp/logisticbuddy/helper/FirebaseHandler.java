@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.batp.logisticbuddy.model.DriverData;
 import com.batp.logisticbuddy.model.MapData;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -28,6 +29,7 @@ import java.util.Objects;
  */
 public class FirebaseHandler {
     private static final String ORDER_TABLE = "order";
+    private static final String DRIVER_TABLE = "driver";
     private static final String TAG = FirebaseHandler.class.getSimpleName();
 
     FirebaseAuth mFirebaseAuth;
@@ -78,6 +80,23 @@ public class FirebaseHandler {
 
                     }
                 });
+    }
+
+    public void storeRoute(List<DriverData> driverDatas, final FirebaseListener listener) {
+        mFirebaseDatabaseReference.child(DRIVER_TABLE)
+                .push()
+                .setValue(driverDatas)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        listener.onSuccess();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                listener.onFailed(e.toString());
+            }
+        });
     }
 
     public interface SessionListener {
