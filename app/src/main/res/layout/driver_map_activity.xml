@@ -54,4 +54,13 @@
         android:layout_alignParentBottom="true"
         android:text="Konfirm Yaaa"/>
 
+    <TextView
+        android:id="@+id/test_success_delivery_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TEST SUKSES JIIIR"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:textSize="28sp" />
+
 </RelativeLayout>
