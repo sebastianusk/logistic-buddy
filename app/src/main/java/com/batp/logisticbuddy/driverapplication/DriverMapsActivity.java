@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
@@ -49,14 +50,13 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     private TextView z;
     private TextView startDriveButton;
     private TextView confirmDeliveredButton;
+    private TextView testSuccessButton;
 
     private FirebaseHandler firebaseHandler;
 
     private int currentDestinationIndex;
 
     private Location currentDriverLocation;
-
-    private Location destinationLocation;
 
     private static final float CLOSE_DISTANCE = 150;
 
@@ -65,8 +65,6 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     private List<Location> locationList;
 
     private List<String> customerOTP;
-
-    private List<MarkerOptions> appointedMarkers;
 
     private MarkerOptions driverMarker;
 
@@ -97,8 +95,6 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         y = (TextView) findViewById(R.id.y_axis);
         z = (TextView) findViewById(R.id.z_axis);
 
-        appointedMarkers = new ArrayList<>();
-
         latLngLists = new ArrayList<>();
 
         locationList = new ArrayList<>();
@@ -113,70 +109,79 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         confirmDeliveredButton = (TextView) findViewById(R.id.driver_confirm_shipment_button);
         confirmDeliveredButton.setOnClickListener(onConfirmButtonClickedListener());
 
+        testSuccessButton = (TextView) findViewById(R.id.test_success_delivery_button);
+        testSuccessButton.setOnClickListener(onDelivered());
+
         receiver = new SpeedingResultReceiver(new Handler());
         receiver.setReceiver(this);
         DriverIntentService.startBackgroundService(this, receiver);
     }
 
-    private void fetchDataFromGoogleMapApi(List<LatLng> locationList) {
+    private View.OnClickListener onDelivered() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                successFullyDelivered();
+            }
+        };
+    }
+
+    private void successFullyDelivered() {
+        currentDestinationIndex++;
+        if(currentDestinationIndex == latLngLists.size()-1){
+            mMap.clear();
+            googleParameters.clear();
+            Toast.makeText(DriverMapsActivity.this, "CONGRATS", Toast.LENGTH_LONG).show();
+        } else {
+            fetchDestinationFromGoogleMapApi();
+        }
+    }
+
+    private void fetchDestinationFromGoogleMapApi () {
         GoogleMapApiInterface mapInterface = GoogleMapApiService.getClient().create(GoogleMapApiInterface.class);
         googleParameters.clear();
         mMap.clear();
-
-        googleParameters.put("origin", String.valueOf(locationList.get(0).latitude)
+        googleParameters.put("origin", String.valueOf(latLngLists.get(currentDestinationIndex).latitude)
                 + ","
-                +String.valueOf(locationList.get(0).longitude));
-        googleParameters.put("destination", String.valueOf(locationList.get(locationList.size()-1).latitude)
-                + ","
-                +String.valueOf(locationList.get(locationList.size()-1).longitude));
+                + String.valueOf(latLngLists.get(currentDestinationIndex).longitude));
+        googleParameters.put("destination", String.valueOf(latLngLists.get(currentDestinationIndex+1).latitude) +
+                ","
+                + String.valueOf(latLngLists.get(currentDestinationIndex+1).longitude));
         googleParameters.put("mode", "driving");
         googleParameters.put("key", getString(R.string.google_direction_key));
-        locationList.remove(0);
-        locationList.remove(locationList.size()-1);
-        String waypoints = "";
-
-        for(int waypointIndex = 0; waypointIndex < locationList.size(); waypointIndex++) {
-            waypoints = waypoints + locationList.get(waypointIndex).latitude
-                    + ","
-                    + locationList.get(waypointIndex).longitude;
-            if(waypointIndex != locationList.size() -1) {
-                waypoints = waypoints + "|";
-            }
-        }
-        googleParameters.put("waypoints", waypoints);
-
         retrofit2.Call<DriverModel> call = mapInterface.getDistance(googleParameters);
         call.enqueue(new Callback<DriverModel>() {
             @Override
-            public void onResponse(retrofit2.Call<DriverModel> call, Response<DriverModel> response) {
-                Leg startLeg = response.body().getRoutes().get(0).getLegs().get(0);
-                LatLng startLatLng = new LatLng(startLeg.getStartLocation().getLat(), startLeg.getStartLocation().getLng());
+            public void onResponse(Call<DriverModel> call, Response<DriverModel> response) {
+                Leg currentLeg = response.body().getRoutes().get(0).getLegs().get(0);
+                LatLng startLatLng = new LatLng(currentLeg.getStartLocation().getLat(), currentLeg.getStartLocation().getLng());
                 mMap.addMarker(new MarkerOptions().position(startLatLng));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(startLatLng));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-                for(int i = 0; i<response.body().getRoutes().get(0).getLegs().size(); i++) {
-                    Leg leg = response.body().getRoutes().get(0).getLegs().get(i);
-                    LatLng endLatLng = new LatLng(leg.getEndLocation().getLat(), leg.getEndLocation().getLng());
-                    mMap.addMarker(new MarkerOptions().position(endLatLng).title("Route " + String.valueOf(i)));
-
-                    for (int j =0; j < leg.getSteps().size(); j++) {
-
-                        PolylineOptions polylineOptions = new PolylineOptions()
-                                .addAll(decodePoly(leg.getSteps().get(j).getPolyline().getPoints()))
-                                .width(10)
-                                .color(Color.BLUE)
-                                .geodesic(true);
-
-                        mMap.addPolyline(polylineOptions);
-                    }
-                }
+                setDestination(currentLeg);
             }
 
             @Override
-            public void onFailure(retrofit2.Call<DriverModel> call, Throwable t) {
+            public void onFailure(Call<DriverModel> call, Throwable t) {
 
             }
         });
+    }
+
+    private void setDestination(Leg leg) {
+        LatLng endLatLng = new LatLng(leg.getEndLocation().getLat(), leg.getEndLocation().getLng());
+        mMap.addMarker(new MarkerOptions().position(endLatLng).title("Route " + String.valueOf(currentDestinationIndex + 1)));
+
+        for (int j =0; j < leg.getSteps().size(); j++) {
+
+            PolylineOptions polylineOptions = new PolylineOptions()
+                    .addAll(decodePoly(leg.getSteps().get(j).getPolyline().getPoints()))
+                    .width(10)
+                    .color(Color.BLUE)
+                    .geodesic(true);
+
+            mMap.addPolyline(polylineOptions);
+        }
     }
 
     private List<LatLng> decodePoly(String encoded) {
@@ -229,38 +234,19 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
             @Override
             public void onClick(View v) {
                 googleParameters = new HashMap<>();
-/*                googleParameters.put("origin", "-6.1904982,106.7976599");
-                googleParameters.put("destination", "-6.190699,106.7975051");*/
-/*                List<Location> dummyLocationLists = new ArrayList<>();
-                Location origin = new Location("originmarker");
-                origin.setLatitude(-6.1904982);
-                origin.setLongitude(106.7976599);
-                Location destination = new Location("destinationmarker");
-                destination.setLatitude(-6.190699);
-                destination.setLongitude(106.7975051);
-                Location location1 = new Location("dummyLocation1");
-                location1.setLatitude(-6.1915241);
-                location1.setLongitude(106.7975194);
-                Location location2 = new Location("dummyLocation2");
-                location2.setLatitude(-6.1922012);
-                location2.setLongitude(106.7968999);
-
-                dummyLocationLists.add(origin);
-                dummyLocationLists.add(location1);
-                dummyLocationLists.add(location2);
-                dummyLocationLists.add(destination);*/
                 firebaseHandler.getOrderLocation(new FirebaseHandler.GetDriverDesignatedLocations() {
                     @Override
                     public void onSuccessList(List<MapData> mapDataList) {
                         for (int i = 0; i< mapDataList.size(); i++){
                             MapData convertedMapData = MapData.convertFromFirebase((Map<String, Object>) mapDataList.get(i));
                             latLngLists.add(convertedMapData.getPosition());
+                            customerOTP.add(convertedMapData.getVerifyCode());
                             Location location = new Location("dummy_provider");
                             location.setLatitude(convertedMapData.getPosition().latitude);
                             location.setLongitude(convertedMapData.getPosition().longitude);
                             locationList.add(location);
                         }
-                        fetchDataFromGoogleMapApi(latLngLists);
+                        fetchDestinationFromGoogleMapApi();
                     }
 
                     @Override
@@ -304,6 +290,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
 
     @Override
     public void onOtpDone() {
+        successFullyDelivered();
         Toast.makeText(this, "OTP DONE", Toast.LENGTH_LONG).show();
     }
 }

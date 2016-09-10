@@ -55,7 +55,9 @@ public class InsertOtpDialog extends DialogFragment{
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((OtpListener) getActivity()).onOtpDone();
+                if(getArguments().getString(OTP_CODE_KEY).equals(otpHolder.getText().toString())){
+                    ((OtpListener) getActivity()).onOtpDone();
+                }
             }
         };
     }
