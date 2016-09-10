@@ -5,4 +5,5 @@
     <string name="choose_location">Choose location</string>
     <string name="find_client_button">Cari Client</string>
     <string name="map_not_ready">Map is not Ready</string>
+    <string name="find_fastest_routes">Find Fastest Routes</string>
 </resources>

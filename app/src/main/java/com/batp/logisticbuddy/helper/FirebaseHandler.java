@@ -1,5 +1,6 @@
 package com.batp.logisticbuddy.helper;
 
+import android.app.ProgressDialog;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -10,11 +11,17 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by nisie on 9/10/16.
@@ -49,14 +56,21 @@ public class FirebaseHandler {
         });
     }
 
-    public void receiveOrders(){
+    public void receiveOrders(final GetOrdersListener listener){
         mFirebaseDatabaseReference.child(ORDER_TABLE)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Log.i(TAG, "data shanpshot is " + dataSnapshot.toString());
-
+                        Map<String, Object> objectMap = (Map <String, Object>) dataSnapshot.getValue();
+                        List<MapData> mapDataList = new ArrayList<MapData>();
+                        for (Object obj : objectMap.values()) {
+                            if (obj instanceof Map) {
+                                Map<String, Object> mapObj = (Map<String, Object>) obj;
+                                mapDataList.add(MapData.convertFromFirebase(mapObj));
+                            }
+                        }
+                        listener.onSuccess(mapDataList);
                     }
 
                     @Override
@@ -73,6 +87,11 @@ public class FirebaseHandler {
     public interface FirebaseListener {
         void onSuccess();
 
+        void onFailed(String error);
+    }
+
+    public interface GetOrdersListener{
+        void onSuccess(List<MapData> mapData);
         void onFailed(String error);
     }
 
