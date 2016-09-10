@@ -26,6 +26,7 @@ public class MapData implements Parcelable{
     String verifyCode;
     String truck;
     String userId;
+    private String key;
 
     protected MapData(Parcel in) {
         position = in.readParcelable(LatLng.class.getClassLoader());
@@ -133,6 +134,7 @@ public class MapData implements Parcelable{
         marker.setAddress((String) mapObj.get("address"));
         marker.setPhone((String) mapObj.get("phone"));
         marker.setRecipient((String) mapObj.get("recipient"));
+        marker.setVerifyCode((String) mapObj.get("verifyCode"));
         marker.setPosition(converPositionFromFirebase(mapObj));
         marker.setItem(convertItemsFromFirebase(mapObj));
         return marker;
@@ -174,5 +176,13 @@ public class MapData implements Parcelable{
         parcel.writeString(phone);
         parcel.writeString(verifyCode);
         parcel.writeString(userId);
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
     }
 }

@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.batp.logisticbuddy.client.CreateOrderActivity;
+import com.batp.logisticbuddy.client.OrderDetailActivity;
 import com.batp.logisticbuddy.helper.SessionHandler;
 import com.batp.logisticbuddy.server.ServerActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,6 +21,9 @@ public class MenuActivity extends AppCompatActivity {
 
     @BindView(R.id.btn_start_driving)
     Button startDriving;
+
+    @BindView(R.id.list_order_button)
+    Button listOrder;
 
     @BindView(R.id.btn_create_order)
     Button createOrder;
@@ -84,6 +88,12 @@ public class MenuActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mFirebaseAuth.signOut();
                 startActivity(new Intent(MenuActivity.this, LoginActivity.class));
+            }
+        });
+        listOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MenuActivity.this, OrderDetailActivity.class));
             }
         });
     }

@@ -1,9 +1,11 @@
 package com.batp.logisticbuddy.client;
 
+import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
 import com.batp.logisticbuddy.R;
 import com.batp.logisticbuddy.client.adapter.OrderAdapter;
@@ -34,15 +36,20 @@ public class OrderDetailActivity extends AppCompatActivity {
     }
 
     private void initData() {
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Please wait...");
+        progressDialog.show();
         FirebaseHandler.getOrderClient(SessionHandler.getUserId(this), new FirebaseHandler.GetOrdersListener() {
             @Override
             public void onSuccess(List<MapData> mapData) {
+                progressDialog.dismiss();
                 orderAdapter.setList(mapData);
             }
 
             @Override
             public void onFailed(String error) {
-
+                progressDialog.dismiss();
+                Toast.makeText(OrderDetailActivity.this, error, Toast.LENGTH_SHORT).show();
             }
         });
     }
