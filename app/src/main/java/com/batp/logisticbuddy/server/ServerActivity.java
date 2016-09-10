@@ -62,6 +62,7 @@ public class ServerActivity extends BaseMapActivity {
                         mapDatas.put(String.valueOf(j), orders.get((int) simpleMatrix.get(i,j)));
                     }
                     driverData.setDestinations(mapDatas);
+                    driverDatas.set(i, driverData);
                 }
                 dialog.show();
                 firebaseHandler.storeRoute(driverDatas, new FirebaseHandler.FirebaseListener() {

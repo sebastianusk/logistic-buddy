@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -62,6 +63,8 @@ public abstract class BaseMapActivity  extends AppCompatActivity implements OnMa
                     PERMISSION_ACCESS_FINE_LOCATION);
         } else {
             mMap.setMyLocationEnabled(true);
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
         }
     }
 
