@@ -3,6 +3,7 @@ package com.batp.logisticbuddy.driverapplication;
 import android.app.FragmentManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -63,6 +64,16 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     @Override
     protected UiSettings setMapUISetting(GoogleMap googleMap) {
         return googleMap.getUiSettings();
+    }
+
+    @Override
+    protected LocationListener getLocationListener() {
+        return null;
+    }
+
+    @Override
+    protected boolean goToPosition() {
+        return false;
     }
 
     @Override
