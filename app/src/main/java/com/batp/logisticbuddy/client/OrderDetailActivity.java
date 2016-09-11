@@ -1,10 +1,12 @@
 package com.batp.logisticbuddy.client;
 
+import android.app.ProgressDialog;
 import android.location.LocationListener;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 import com.batp.logisticbuddy.R;
 import com.batp.logisticbuddy.client.adapter.ItemCodeAdapter;
 import com.batp.logisticbuddy.client.adapter.OrderAdapter;
+import com.batp.logisticbuddy.helper.FirebaseHandler;
 import com.batp.logisticbuddy.map.BaseMapActivity;
 import com.batp.logisticbuddy.model.MapData;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,11 +38,20 @@ public class OrderDetailActivity extends BaseMapActivity {
     @BindView(R.id.phone)
     EditText phone;
 
+    @BindView(R.id.driver_status)
+    EditText driverStatus;
+
+    @BindView(R.id.expected_time_of_arrival)
+    EditText expectedTimeArrival;
+
     @BindView(R.id.map_layout)
     View mapView;
 
     @BindView(R.id.list_item)
     RecyclerView listItem;
+
+    @BindView(R.id.last_update_time)
+    TextView lastUpdateTimeText;
 
     MapData mapData;
     ItemCodeAdapter itemAdapter;
@@ -49,6 +61,32 @@ public class OrderDetailActivity extends BaseMapActivity {
         super.onCreate(savedInstanceState);
 
         initView();
+        initDriverStatus();
+    }
+
+    private void initDriverStatus() {
+
+        if(mapData.getTruck() != null) {
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Please wait...");
+            progressDialog.show();
+            FirebaseHandler.getTruckStatus(mapData.getTruck(), new FirebaseHandler.DriverStatusListener() {
+                @Override
+                public void onSuccess(String status, String lastUpdateTime) {
+                    progressDialog.dismiss();
+                    driverStatus.setText(status);
+                    lastUpdateTimeText.setText("Last update time : " + lastUpdateTime);
+                }
+
+                @Override
+                public void onFailed(String error) {
+                    progressDialog.dismiss();
+                    Log.e(OrderDetailActivity.class.getSimpleName(), error);
+                }
+            });
+
+
+        }
     }
 
     @Override
@@ -78,6 +116,7 @@ public class OrderDetailActivity extends BaseMapActivity {
             recipient.setText(mapData.getRecipient());
             address.setText(mapData.getAddress());
             phone.setText(mapData.getPhone());
+            expectedTimeArrival.setText(mapData.getEstimatedTime());
 
             itemAdapter = ItemCodeAdapter.createInstance();
             itemAdapter.setDeleteEnabled(false);
