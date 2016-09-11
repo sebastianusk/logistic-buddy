@@ -169,26 +169,28 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         call.enqueue(new Callback<DriverModel>() {
             @Override
             public void onResponse(Call<DriverModel> call, Response<DriverModel> response) {
-                Leg currentLeg = response.body().getRoutes().get(0).getLegs().get(0);
-                LatLng startLatLng = new LatLng(currentLeg.getStartLocation().getLat(), currentLeg.getStartLocation().getLng());
-                mMap.addMarker(new MarkerOptions().position(startLatLng));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(startLatLng));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-                setDestination(currentLeg);
-                dialog.show();
-                MapData mapData = mapDatasAssigned.get(currentDestinationIndex);
-                mapData.setEstimatedTime(currentLeg.getDuration().getText());
-                FirebaseHandler.updateOrder(mapData, new FirebaseHandler.FirebaseListener() {
-                    @Override
-                    public void onSuccess() {
-                        dialog.dismiss();
-                    }
+                List<Leg> legs = response.body().getRoutes().get(0).getLegs();
+                for(Leg currentLeg : legs) {
+                    LatLng startLatLng = new LatLng(currentLeg.getStartLocation().getLat(), currentLeg.getStartLocation().getLng());
+                    mMap.addMarker(new MarkerOptions().position(startLatLng));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(startLatLng));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                    setDestination(currentLeg);
+                    dialog.show();
+                    MapData mapData = mapDatasAssigned.get(currentDestinationIndex + 1);
+                    mapData.setEstimatedTime(currentLeg.getDuration().getText());
+                    FirebaseHandler.updateOrder(mapData, new FirebaseHandler.FirebaseListener() {
+                        @Override
+                        public void onSuccess() {
+                            dialog.dismiss();
+                        }
 
-                    @Override
-                    public void onFailed(String error) {
-                        dialog.dismiss();
-                    }
-                });
+                        @Override
+                        public void onFailed(String error) {
+                            dialog.dismiss();
+                        }
+                    });
+                }
             }
 
             @Override
