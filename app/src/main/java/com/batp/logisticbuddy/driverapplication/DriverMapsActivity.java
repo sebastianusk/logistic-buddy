@@ -24,6 +24,7 @@ import com.batp.logisticbuddy.driverapplication.service.GoogleMapApiService;
 import com.batp.logisticbuddy.fragment.InsertOtpDialog;
 import com.batp.logisticbuddy.helper.FirebaseHandler;
 import com.batp.logisticbuddy.map.BaseMapActivity;
+import com.batp.logisticbuddy.model.AccidentData;
 import com.batp.logisticbuddy.model.MapData;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,8 +33,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +89,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     private MarkerOptions driverMarker;
 
     private VelocityListener velocityListener;
+    private LatLng realTimeLatLng;
 
     @Override
     protected int getLayoutId() {
@@ -382,17 +388,57 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                 );
 
                 if(vector > 30){
-                    FirebaseHandler.updateStatus("ON HIT!!!", new FirebaseHandler.FirebaseListener() {
+                    final AccidentData accidentData = new AccidentData();
+                    Calendar c = Calendar.getInstance();
+                    accidentData.setTime(DateFormat.getDateInstance().format(c.getTime()));
+                    accidentData.setLocation(realTimeLatLng);
+                    Observable.create(new Observable.OnSubscribe<String>() {
                         @Override
-                        public void onSuccess() {
+                        public void call(final Subscriber<? super String> subscriber) {
+                            FirebaseHandler.updateStatus("ON HIT!!!", new FirebaseHandler.FirebaseListener() {
+                                @Override
+                                public void onSuccess() {
+                                    subscriber.onNext("HIT");
+                                }
 
+                                @Override
+                                public void onFailed(String error) {
+                                    subscriber.onError(new Throwable(error));
+                                }
+                            });
                         }
+                    })
+                            .debounce(5, TimeUnit.SECONDS)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .unsubscribeOn(Schedulers.io())
+                            .subscribe(new Subscriber<String>() {
+                                @Override
+                                public void onCompleted() {
 
-                        @Override
-                        public void onFailed(String error) {
+                                }
 
-                        }
-                    });
+                                @Override
+                                public void onError(Throwable e) {
+
+                                }
+
+                                @Override
+                                public void onNext(String s) {
+                                    FirebaseHandler.onAccident(accidentData, new FirebaseHandler.FirebaseListener() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onFailed(String error) {
+
+                                        }
+                                    });
+                                }
+                            });
+
                 }
 
 
@@ -425,7 +471,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
 
     @Override
     public void onLocationChanged(Location location) {
-        LatLng realTimeLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+        realTimeLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
         driverMarker.position(realTimeLatLng);
         if(location.distanceTo(mapDatasAssigned.get(currentDestinationIndex + 1).convertToPosition()) <  CLOSE_DISTANCE){

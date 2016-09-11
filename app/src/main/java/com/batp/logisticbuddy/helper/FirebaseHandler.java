@@ -3,10 +3,12 @@ package com.batp.logisticbuddy.helper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.batp.logisticbuddy.model.AccidentData;
 import com.batp.logisticbuddy.model.TruckData;
 import com.batp.logisticbuddy.model.MapData;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -80,7 +82,7 @@ public class FirebaseHandler {
     public void getOrderLocation(final GetDriverDesignatedLocations listener) {
         DatabaseReference mFireBaseDataReference;
         mFireBaseDataReference = FirebaseDatabase.getInstance().getReference();
-        mFireBaseDataReference.child("truck").child("truck1").child("destinations")
+        mFireBaseDataReference.child("truck").child(SessionHandler.getCurrentDriver()).child("destinations")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -382,7 +384,7 @@ public class FirebaseHandler {
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mFirebaseDatabaseReference
                 .child(TRUCK)
-                .child("truck1")
+                .child(SessionHandler.getCurrentDriver())
                 .child("status")
                 .setValue(s)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -395,7 +397,7 @@ public class FirebaseHandler {
                         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
                         mFirebaseDatabaseReference
                                 .child(TRUCK)
-                                .child("truck1")
+                                .child(SessionHandler.getCurrentDriver())
                                 .child("last_update_time")
                                 .setValue(sdf.format(new Date()))
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -416,6 +418,31 @@ public class FirebaseHandler {
                 listener.onFailed(e.getMessage());
             }
         });
+    }
+
+    public static void onAccident(AccidentData accidentData, final FirebaseListener listener) {
+        if(listener == null)
+            return;
+        DatabaseReference mFirebaseDatabaseReference;
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference
+                .child(TRUCK)
+                .child(SessionHandler.getCurrentDriver())
+                .child("accidents")
+                .push()
+                .setValue(accidentData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        listener.onSuccess();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        listener.onFailed(e.getMessage());
+                    }
+                });
     }
 
     public interface SessionListener {
