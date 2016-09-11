@@ -381,7 +381,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                         * Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0"))
                 );
 
-                if(vector > 17){
+                if(vector > 30){
                     FirebaseHandler.updateStatus("ON HIT!!!", new FirebaseHandler.FirebaseListener() {
                         @Override
                         public void onSuccess() {
@@ -436,11 +436,11 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
             startDriveButton.setVisibility(View.VISIBLE);
         }
 
-        if(location.getSpeed() < 1){
+        if(location.getSpeed() != 0){
             velocityListener.onVelocityChanged((double) location.getSpeed());
         }
 
-        if (location.getSpeed() > 80){
+        if (location.getSpeed() > 22.2222222){
             FirebaseHandler.updateStatus("TOO FAST", new FirebaseHandler.FirebaseListener() {
                 @Override
                 public void onSuccess() {
