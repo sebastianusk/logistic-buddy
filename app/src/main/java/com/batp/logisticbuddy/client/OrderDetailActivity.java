@@ -50,6 +50,9 @@ public class OrderDetailActivity extends BaseMapActivity {
     @BindView(R.id.list_item)
     RecyclerView listItem;
 
+    @BindView(R.id.last_update_time)
+    TextView lastUpdateTimeText;
+
     MapData mapData;
     ItemCodeAdapter itemAdapter;
 
@@ -69,9 +72,10 @@ public class OrderDetailActivity extends BaseMapActivity {
             progressDialog.show();
             FirebaseHandler.getTruckStatus(mapData.getTruck(), new FirebaseHandler.DriverStatusListener() {
                 @Override
-                public void onSuccess(String status) {
+                public void onSuccess(String status, String lastUpdateTime) {
                     progressDialog.dismiss();
                     driverStatus.setText(status);
+                    lastUpdateTimeText.setText("Last update time : " + lastUpdateTime);
                 }
 
                 @Override
@@ -80,6 +84,8 @@ public class OrderDetailActivity extends BaseMapActivity {
                     Log.e(OrderDetailActivity.class.getSimpleName(), error);
                 }
             });
+
+
         }
     }
 
@@ -110,6 +116,7 @@ public class OrderDetailActivity extends BaseMapActivity {
             recipient.setText(mapData.getRecipient());
             address.setText(mapData.getAddress());
             phone.setText(mapData.getPhone());
+            expectedTimeArrival.setText(mapData.getEstimatedTime());
 
             itemAdapter = ItemCodeAdapter.createInstance();
             itemAdapter.setDeleteEnabled(false);

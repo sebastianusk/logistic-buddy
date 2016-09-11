@@ -71,6 +71,14 @@
                 android:inputType="text" />
         </android.support.design.widget.TextInputLayout>
 
+        <TextView
+            android:id="@+id/last_update_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Last updated time xxx"
+            android:textSize="10dp"
+            android:textStyle="italic"/>
+
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
