@@ -64,7 +64,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, final int position) {
         holder.address.setText(listOrder.get(position).getAddress());
 
-        String s = String.format("%02d", position);
+        String s = String.format("%02d", position + 1);
         holder.position.setText(s);
 
         holder.orderView.setOnClickListener(new View.OnClickListener() {
