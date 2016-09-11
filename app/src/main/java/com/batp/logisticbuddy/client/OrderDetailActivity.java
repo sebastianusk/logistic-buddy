@@ -53,6 +53,9 @@ public class OrderDetailActivity extends BaseMapActivity {
     @BindView(R.id.last_update_time)
     TextView lastUpdateTimeText;
 
+    @BindView(R.id.verify_code)
+    EditText verifyCode;
+
     MapData mapData;
     ItemCodeAdapter itemAdapter;
 
@@ -117,6 +120,7 @@ public class OrderDetailActivity extends BaseMapActivity {
             recipient.setText(mapData.getRecipient());
             address.setText(mapData.getAddress());
             phone.setText(mapData.getPhone());
+            verifyCode.setText(mapData.getVerifyCode());
             if (mapData.getEstimatedTime() != null && mapData.getEstimatedTime().toString().length() > 0)
                 expectedTimeArrival.setText(mapData.getEstimatedTime());
 
