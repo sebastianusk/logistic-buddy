@@ -150,6 +150,7 @@ public class MapData implements Parcelable{
         marker.setVerifyCode((String) mapObj.get("verifyCode"));
         marker.setUserId((String) mapObj.get("userId"));
         marker.setKey((String) mapObj.get("key"));
+        marker.setTruck((String) mapObj.get("truck"));
         marker.setEstimatedTime((String) mapObj.get("estimatedTime"));
         marker.setPosition(converPositionFromFirebase(mapObj));
         marker.setItem(convertItemsFromFirebase(mapObj));

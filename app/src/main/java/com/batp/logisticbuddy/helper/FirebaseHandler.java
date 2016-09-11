@@ -327,7 +327,7 @@ public class FirebaseHandler {
         DatabaseReference mFirebaseDatabaseReference;
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mFirebaseDatabaseReference.child(CLIENT_TABLE).child(userId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
+                .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Log.i(TAG, "data shanpshot is " + dataSnapshot.toString());
@@ -354,6 +354,26 @@ public class FirebaseHandler {
                 });
     }
 
+    public static void getTruckStatus(String truck, final DriverStatusListener listener) {
+        DatabaseReference mFirebaseDatabaseReference;
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference.child(TRUCK).child(truck)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.i(TAG, "data shanpshot is " + dataSnapshot.toString());
+                        Map<String, Object> objectMap = (Map<String, Object>) dataSnapshot.getValue();
+
+                        listener.onSuccess(String.valueOf(objectMap.get("status")));
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
     public interface SessionListener {
         void onAlreadyLogin();
     }
@@ -364,6 +384,10 @@ public class FirebaseHandler {
         void onFailed(String error);
     }
 
+    public interface DriverStatusListener {
+        void onSuccess(String status);
+        void onFailed (String error);
+    }
     public interface GetOrdersListener {
         void onSuccess(List<MapData> mapData);
 
