@@ -78,7 +78,7 @@ public class FirebaseHandler {
     public void getOrderLocation(final GetDriverDesignatedLocations listener) {
         DatabaseReference mFireBaseDataReference;
         mFireBaseDataReference = FirebaseDatabase.getInstance().getReference();
-        mFireBaseDataReference.child("truck0").child("destinations")
+        mFireBaseDataReference.child("truck").child("truck1").child("destinations")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -95,24 +95,26 @@ public class FirebaseHandler {
 
     public static void updateOrder(final MapData param, final FirebaseListener listener) {
 
-        final DatabaseReference mFirebaseDatabaseReference;
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mFirebaseDatabaseReference.child(CLIENT_TABLE)
-                .child(param.getUserId())
-                .child(param.getKey())
-                .setValue(param)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        listener.onSuccess();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        listener.onFailed(e.toString());
-                    }
-                });
+        if(param.getUserId() != null && param.getKey() != null) {
+            final DatabaseReference mFirebaseDatabaseReference;
+            mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+            mFirebaseDatabaseReference.child(CLIENT_TABLE)
+                    .child(param.getUserId())
+                    .child(param.getKey())
+                    .setValue(param)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            listener.onSuccess();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            listener.onFailed(e.toString());
+                        }
+                    });
+        }
     }
 
     public static void getBaseLocation(final GetOrderListener listener) {
@@ -352,6 +354,30 @@ public class FirebaseHandler {
 
                     }
                 });
+    }
+
+    public static void updateStatus(String s, final FirebaseListener listener) {
+        if(listener == null){
+            return;
+        }
+        DatabaseReference mFirebaseDatabaseReference;
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference
+                .child(TRUCK)
+                .child("truck1")
+                .child("status")
+                .setValue(s)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        listener.onSuccess();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                listener.onFailed(e.getMessage());
+            }
+        });
     }
 
     public interface SessionListener {

@@ -266,29 +266,41 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dialog.show();
                 googleParameters = new HashMap<>();
-                firebaseHandler.getOrderLocation(new FirebaseHandler.GetDriverDesignatedLocations() {
+                firebaseHandler.updateStatus("ON THE WAY", new FirebaseHandler.FirebaseListener() {
                     @Override
-                    public void onSuccessList(List<MapData> mapDataList) {
-                        for (int i = 0; i< mapDataList.size(); i++){
-                            MapData convertedMapData = MapData.convertFromFirebase((Map<String, Object>) mapDataList.get(i));
-                            mapDatasAssigned.add(convertedMapData);
+                    public void onSuccess() {
+                        firebaseHandler.getOrderLocation(new FirebaseHandler.GetDriverDesignatedLocations() {
+                            @Override
+                            public void onSuccessList(List<MapData> mapDataList) {
+                                for (int i = 0; i< mapDataList.size(); i++){
+                                    MapData convertedMapData = MapData.convertFromFirebase((Map<String, Object>) mapDataList.get(i));
+                                    mapDatasAssigned.add(convertedMapData);
 //                            latLngLists.add(convertedMapData.getPosition());
 //                            customerOTP.add(convertedMapData.getVerifyCode());
 //                            Location location = new Location("dummy_provider");
 //                            location.setLatitude(convertedMapData.getPosition().latitude);
 //                            location.setLongitude(convertedMapData.getPosition().longitude);
 //                            locationList.add(location);
-                        }
-                        fetchDestinationFromGoogleMapApi();
-                        initiateLocationListener();
+                                }
+                                fetchDestinationFromGoogleMapApi();
+                                initiateLocationListener();
+                            }
+
+                            @Override
+                            public void onFailed() {
+
+                            }
+                        });
                     }
 
                     @Override
-                    public void onFailed() {
+                    public void onFailed(String error) {
 
                     }
                 });
+
             }
         };
     }
@@ -296,7 +308,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
         switch(resultCode) {
-            case 10 :
+            case 10:
                 if(Double.parseDouble(x.getText().toString()) < Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_X_AXIS, "0")))
                     x.setText(resultData.getString(DriverIntentService.SENSOR_X_AXIS, "0"));
                 if(Double.parseDouble(y.getText().toString()) < Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Y_AXIS, "0")))
