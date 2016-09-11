@@ -34,26 +34,31 @@
     <TextView
         android:id="@+id/driver_start_button"
         android:layout_alignParentBottom="true"
-        android:textSize="28sp"
-        android:background="@android:color/holo_blue_light"
-        android:text="Mulai Coooy"
-        android:gravity="center_horizontal"
-        android:layout_marginBottom="@dimen/margin_small"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:textSize="14sp"
+        android:background="#2196f3"
+        android:text="Start Driving"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_width="328dp"
+        android:layout_height="48dp" />
 
     <TextView
         android:id="@+id/driver_confirm_shipment_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="28sp"
-        android:background="@android:color/holo_blue_light"
-        android:visibility="gone"
-        android:layout_marginBottom="@dimen/margin_small"
-        android:gravity="center_horizontal"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:text="Konfirm Yaaa"/>
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:background="#2196f3"
+        android:visibility="gone"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_width="328dp"
+        android:layout_height="48dp"
+        android:text="Confirm Arrival"/>
 
     <TextView
         android:id="@+id/test_success_delivery_button"
@@ -63,6 +68,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:visibility="gone"
-        android:textSize="28sp" />
+        android:textSize="24sp" />
 
 </RelativeLayout>
