@@ -11,7 +11,9 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
+import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,6 +72,8 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     private TextView confirmDeliveredButton;
     private TextView testSuccessButton;
 
+    private int steps;
+
     private FirebaseHandler firebaseHandler;
 
     private int currentDestinationIndex;
@@ -80,11 +84,9 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
 
     private List<MapData> mapDatasAssigned;
 
-//    private List<LatLng> latLngLists;
-//
-//    private List<Location> locationList;
-//
-//    private List<String> customerOTP;
+    private List<Location> stepMarkersLocations;
+
+    private List<String> stepMarkresSnippet;
 
     private MarkerOptions driverMarker;
 
@@ -125,11 +127,9 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
 
         mapDatasAssigned = new ArrayList<>();
 
-//        latLngLists = new ArrayList<>();
-//
-//        locationList = new ArrayList<>();
-//
-//        customerOTP = new ArrayList<>();
+        stepMarkersLocations = new ArrayList<>();
+
+        stepMarkresSnippet = new ArrayList<>();
 
         driverMarker = new MarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 
@@ -204,6 +204,9 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
 
     private void successFullyDelivered() {
         currentDestinationIndex++;
+        steps = 0;
+        stepMarkresSnippet.clear();
+        stepMarkersLocations.clear();
         if(currentDestinationIndex == mapDatasAssigned.size()-1){
             mMap.clear();
             googleParameters.clear();
@@ -232,7 +235,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                 List<Leg> legs = response.body().getRoutes().get(0).getLegs();
                 for(Leg currentLeg : legs) {
                     LatLng startLatLng = new LatLng(currentLeg.getStartLocation().getLat(), currentLeg.getStartLocation().getLng());
-                    mMap.addMarker(new MarkerOptions().position(startLatLng));
+                    mMap.addMarker(new MarkerOptions().position(startLatLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(startLatLng));
                     mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
                     setDestination(currentLeg);
@@ -271,6 +274,20 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                     .width(10)
                     .color(Color.BLUE)
                     .geodesic(true);
+
+            LatLng stepLatLng = new LatLng(leg.getSteps().get(j).getStartLocation().getLat(), leg.getSteps().get(j).getEndLocation().getLng());
+            mMap.addMarker(new MarkerOptions()
+                    .position(stepLatLng)
+                    .title("Step " + String.valueOf(j + 1))
+                    .visible(false)
+                    .snippet(Html.fromHtml(leg.getSteps().get(j).getHtmlInstructions()).toString()));
+
+            Location stepLocations= new Location("dummy");
+            stepLocations.setLatitude(leg.getSteps().get(j).getEndLocation().getLat());
+            stepLocations.setLongitude(leg.getSteps().get(j).getEndLocation().getLng());
+            stepMarkersLocations.add(stepLocations);
+
+            stepMarkresSnippet.add(Html.fromHtml(leg.getSteps().get(j).getHtmlInstructions()).toString());
 
             mMap.addPolyline(polylineOptions);
         }
@@ -314,11 +331,16 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(currentDestinationIndex != mapDatasAssigned.size()-1){
+                if(currentDestinationIndex + 1 != mapDatasAssigned.size()-1){
                     FragmentManager fm = getFragmentManager();
                     InsertOtpDialog dialog = InsertOtpDialog.createInstance(
                             mapDatasAssigned.get(currentDestinationIndex+1).getVerifyCode());
                     dialog.show(fm, "insert_otp_dialog");
+                } else {
+                    confirmDeliveredButton.setVisibility(View.GONE);
+                    startDriveButton.setVisibility(View.VISIBLE);
+                    Toast.makeText(DriverMapsActivity.this, "ALL DELIVERY HAS BEEN SUCCESSFULLY DELIVERED", Toast.LENGTH_LONG).show();
+                    mMap.clear();
                 }
             }
         };
@@ -333,18 +355,13 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                 firebaseHandler.updateStatus("ON THE WAY", new FirebaseHandler.FirebaseListener() {
                     @Override
                     public void onSuccess() {
+                        startDriveButton.setVisibility(View.GONE);
                         firebaseHandler.getOrderLocation(new FirebaseHandler.GetDriverDesignatedLocations() {
                             @Override
                             public void onSuccessList(List<MapData> mapDataList) {
                                 for (int i = 0; i< mapDataList.size(); i++){
                                     MapData convertedMapData = MapData.convertFromFirebase((Map<String, Object>) mapDataList.get(i));
                                     mapDatasAssigned.add(convertedMapData);
-//                            latLngLists.add(convertedMapData.getPosition());
-//                            customerOTP.add(convertedMapData.getVerifyCode());
-//                            Location location = new Location("dummy_provider");
-//                            location.setLatitude(convertedMapData.getPosition().latitude);
-//                            location.setLongitude(convertedMapData.getPosition().longitude);
-//                            locationList.add(location);
                                 }
                                 fetchDestinationFromGoogleMapApi();
                                 initiateLocationListener();
@@ -443,30 +460,13 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
 
 
                 break;
-            case 11:
-                currentDriverLocation = resultData.getParcelable(DriverIntentService.LOCATION_KEY);
-                LatLng realTimeLatLng = null;
-                if (currentDriverLocation != null) {
-                    realTimeLatLng = new LatLng(currentDriverLocation.getLatitude(), currentDriverLocation.getLongitude());
-                    driverMarker.position(realTimeLatLng);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(realTimeLatLng));
-                }
-                if(currentDriverLocation.distanceTo(mapDatasAssigned.get(currentDestinationIndex)
-                .convertToPosition()) <  CLOSE_DISTANCE){
-                    confirmDeliveredButton.setVisibility(View.VISIBLE);
-                    startDriveButton.setVisibility(View.GONE);
-                } else {
-                    confirmDeliveredButton.setVisibility(View.GONE);
-                    startDriveButton.setVisibility(View.VISIBLE);
-                }
-                break;
         }
     }
 
     @Override
     public void onOtpDone() {
         successFullyDelivered();
-        Toast.makeText(this, "OTP DONE", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "OTP CONFIRMED", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -474,12 +474,16 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         realTimeLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
         driverMarker.position(realTimeLatLng);
+        if(stepMarkersLocations.size() > 0 && steps < stepMarkersLocations.size()-1 && location.distanceTo(stepMarkersLocations.get(steps))< CLOSE_DISTANCE){
+            Toast.makeText(this, stepMarkresSnippet.get(steps), Toast.LENGTH_LONG).show();
+            //new DirectionBottomSheet(stepMarkresSnippet.get(steps), this);
+            steps++;
+        }
         if(location.distanceTo(mapDatasAssigned.get(currentDestinationIndex + 1).convertToPosition()) <  CLOSE_DISTANCE){
             confirmDeliveredButton.setVisibility(View.VISIBLE);
             startDriveButton.setVisibility(View.GONE);
         } else {
             confirmDeliveredButton.setVisibility(View.GONE);
-            startDriveButton.setVisibility(View.VISIBLE);
         }
 
         if(location.getSpeed() != 0){
