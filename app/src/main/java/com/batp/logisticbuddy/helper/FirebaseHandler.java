@@ -76,7 +76,7 @@ public class FirebaseHandler {
     public void getOrderLocation(final GetDriverDesignatedLocations listener) {
         DatabaseReference mFireBaseDataReference;
         mFireBaseDataReference = FirebaseDatabase.getInstance().getReference();
-        mFireBaseDataReference.child("truck0").child("destinations")
+        mFireBaseDataReference.child("truck").child("truck1").child("destinations")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {

@@ -10,7 +10,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
+import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,6 +60,8 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     private TextView confirmDeliveredButton;
     private TextView testSuccessButton;
 
+    private int steps;
+
     private FirebaseHandler firebaseHandler;
 
     private int currentDestinationIndex;
@@ -71,6 +75,10 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     private List<Location> locationList;
 
     private List<String> customerOTP;
+
+    private List<Location> stepMarkersLocations;
+
+    private List<String> stepMarkresSnippet;
 
     private MarkerOptions driverMarker;
 
@@ -106,6 +114,10 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         y = (TextView) findViewById(R.id.y_axis);
         z = (TextView) findViewById(R.id.z_axis);
 
+        stepMarkersLocations = new ArrayList<>();
+
+        stepMarkresSnippet = new ArrayList<>();
+
         latLngLists = new ArrayList<>();
 
         locationList = new ArrayList<>();
@@ -139,6 +151,9 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
 
     private void successFullyDelivered() {
         currentDestinationIndex++;
+        steps = 0;
+        stepMarkresSnippet.clear();
+        stepMarkersLocations.clear();
         if(currentDestinationIndex == latLngLists.size()-1){
             mMap.clear();
             googleParameters.clear();
@@ -152,6 +167,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         GoogleMapApiInterface mapInterface = GoogleMapApiService.getClient().create(GoogleMapApiInterface.class);
         googleParameters.clear();
         mMap.clear();
+
         googleParameters.put("origin", String.valueOf(latLngLists.get(currentDestinationIndex).latitude)
                 + ","
                 + String.valueOf(latLngLists.get(currentDestinationIndex).longitude));
@@ -166,7 +182,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
             public void onResponse(Call<DriverModel> call, Response<DriverModel> response) {
                 Leg currentLeg = response.body().getRoutes().get(0).getLegs().get(0);
                 LatLng startLatLng = new LatLng(currentLeg.getStartLocation().getLat(), currentLeg.getStartLocation().getLng());
-                mMap.addMarker(new MarkerOptions().position(startLatLng));
+                mMap.addMarker(new MarkerOptions().position(startLatLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(startLatLng));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
                 setDestination(currentLeg);
@@ -190,6 +206,20 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                     .width(10)
                     .color(Color.BLUE)
                     .geodesic(true);
+
+            LatLng stepLatLng = new LatLng(leg.getSteps().get(j).getEndLocation().getLat(), leg.getSteps().get(j).getEndLocation().getLng());
+            mMap.addMarker(new MarkerOptions()
+                    .position(stepLatLng)
+                    .title("Step " + String.valueOf(j + 1))
+                    .visible(false)
+                    .snippet(Html.fromHtml(leg.getSteps().get(j).getHtmlInstructions()).toString()));
+
+            Location stepLocations= new Location("dummy");
+            stepLocations.setLatitude(leg.getSteps().get(j).getEndLocation().getLat());
+            stepLocations.setLongitude(leg.getSteps().get(j).getEndLocation().getLng());
+            stepMarkersLocations.add(stepLocations);
+
+            stepMarkresSnippet.add(Html.fromHtml(leg.getSteps().get(j).getHtmlInstructions()).toString());
 
             mMap.addPolyline(polylineOptions);
         }
@@ -233,10 +263,14 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(currentDestinationIndex != latLngLists.size()-1){
+                if(currentDestinationIndex + 1 != latLngLists.size()-1){
                     FragmentManager fm = getFragmentManager();
                     InsertOtpDialog dialog = InsertOtpDialog.createInstance(customerOTP.get(currentDestinationIndex+1));
                     dialog.show(fm, "insert_otp_dialog");
+                } else {
+                    confirmDeliveredButton.setVisibility(View.GONE);
+                    startDriveButton.setVisibility(View.VISIBLE);
+                    Toast.makeText(DriverMapsActivity.this, "ALL DELIVERY HAS BEEN SUCCESSFULLY DELIVERED", Toast.LENGTH_LONG).show();
                 }
             }
         };
@@ -250,6 +284,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                 firebaseHandler.getOrderLocation(new FirebaseHandler.GetDriverDesignatedLocations() {
                     @Override
                     public void onSuccessList(List<MapData> mapDataList) {
+                        startDriveButton.setVisibility(View.GONE);
                         for (int i = 0; i< mapDataList.size(); i++){
                             MapData convertedMapData = MapData.convertFromFirebase((Map<String, Object>) mapDataList.get(i));
                             latLngLists.add(convertedMapData.getPosition());
@@ -283,35 +318,24 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                 if(Double.parseDouble(z.getText().toString()) < Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0")))
                     z.setText(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0"));
                 break;
-            case 11:
-                currentDriverLocation = resultData.getParcelable(DriverIntentService.LOCATION_KEY);
-                LatLng realTimeLatLng = null;
-                if (currentDriverLocation != null) {
-                    realTimeLatLng = new LatLng(currentDriverLocation.getLatitude(), currentDriverLocation.getLongitude());
-                    driverMarker.position(realTimeLatLng);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(realTimeLatLng));
-                }
-                if(currentDriverLocation.distanceTo(locationList.get(currentDestinationIndex)) <  CLOSE_DISTANCE){
-                    confirmDeliveredButton.setVisibility(View.VISIBLE);
-                    startDriveButton.setVisibility(View.GONE);
-                } else {
-                    confirmDeliveredButton.setVisibility(View.GONE);
-                    startDriveButton.setVisibility(View.VISIBLE);
-                }
-                break;
         }
     }
 
     @Override
     public void onOtpDone() {
         successFullyDelivered();
-        Toast.makeText(this, "OTP DONE", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "OTP CONFIRMED", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onLocationChanged(Location location) {
         LatLng realTimeLatLng = new LatLng(location.getLatitude(), location.getLongitude());
         driverMarker.position(realTimeLatLng);
+        if(stepMarkersLocations.size() > 0 && steps < stepMarkersLocations.size()-1 && location.distanceTo(stepMarkersLocations.get(steps))< CLOSE_DISTANCE){
+            Toast.makeText(this, stepMarkresSnippet.get(steps), Toast.LENGTH_LONG).show();
+            //new DirectionBottomSheet(stepMarkresSnippet.get(steps), this);
+            steps++;
+        }
         if(location.distanceTo(locationList.get(currentDestinationIndex + 1)) <  CLOSE_DISTANCE){
             confirmDeliveredButton.setVisibility(View.VISIBLE);
             startDriveButton.setVisibility(View.GONE);

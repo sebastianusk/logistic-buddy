@@ -1,23 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical" android:layout_width="280dp"
+    android:layout_height="232dp"
+    android:paddingTop="21dp"
+    android:paddingLeft="24dp"
+    android:paddingRight="16dp">
 
+    <TextView
+        android:text="Input OTP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textSize="16sp"
+        android:text="Please input the OTP given by the Receiver below." />
+    
     <android.support.design.widget.TextInputLayout
+        android:layout_marginTop="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <EditText
             android:id="@+id/otp_holder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Insert OTP here"/>
+            android:hint="Input OTP"/>
     </android.support.design.widget.TextInputLayout>
 
     <TextView
         android:id="@+id/confirm_otp_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="SEND OTP"
-        android:textSize="28sp"/>
+        android:layout_marginTop="30dp"
+        android:text="CONFIRM"
+        android:layout_marginLeft="175dp"
+        android:textStyle="bold"
+        android:textColor="#009688"
+        android:textSize="14sp"/>
 
 </LinearLayout>
