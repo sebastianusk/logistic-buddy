@@ -1,5 +1,7 @@
 package com.batp.logisticbuddy.client.adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.batp.logisticbuddy.R;
+import com.batp.logisticbuddy.client.OrderDetailActivity;
 import com.batp.logisticbuddy.model.MapData;
 
 import java.util.ArrayList;
@@ -20,24 +23,20 @@ import butterknife.ButterKnife;
  */
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> {
 
+    public static final String PARAM_DETAIL = "PARAM_DETAIL";
+    private final Context context;
     ArrayList<MapData> listOrder;
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        @BindView(R.id.delivery_status)
-        TextView deliveryStatus;
+        @BindView(R.id.position)
+        TextView position;
 
         @BindView(R.id.address)
         TextView address;
 
-        @BindView(R.id.phone)
-        TextView phone;
-
-        @BindView(R.id.expected_time_arrive)
-        TextView expectedTimeArrive;
-
-        @BindView(R.id.verify_code)
-        TextView verifyCode;
+        @BindView(R.id.order_view)
+        View orderView;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -45,12 +44,13 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         }
     }
 
-    public OrderAdapter(){
+    public OrderAdapter(Context context){
         this.listOrder = new ArrayList<>();
+        this.context = context;
     }
 
-    public static OrderAdapter createInstance() {
-        return new OrderAdapter();
+    public static OrderAdapter createInstance(Context context) {
+        return new OrderAdapter(context);
     }
 
     @Override
@@ -61,12 +61,20 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         holder.address.setText(listOrder.get(position).getAddress());
-        holder.phone.setText(listOrder.get(position).getPhone());
-        holder.verifyCode.setText(listOrder.get(position).getVerifyCode());
-        holder.deliveryStatus.setText(listOrder.get(position).getTruck());
-        holder.expectedTimeArrive.setText(listOrder.get(position).getTruck());
+
+        String s = String.format("%02d", position + 1);
+        holder.position.setText(s);
+
+        holder.orderView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, OrderDetailActivity.class);
+                intent.putExtra(PARAM_DETAIL,listOrder.get(position));
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

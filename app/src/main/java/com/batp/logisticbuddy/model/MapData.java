@@ -1,5 +1,6 @@
 package com.batp.logisticbuddy.model;
 
+import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -26,6 +27,7 @@ public class MapData implements Parcelable{
     String verifyCode;
     String truck;
     String userId;
+    String estimatedTime;
     private String key;
 
     protected MapData(Parcel in) {
@@ -33,8 +35,12 @@ public class MapData implements Parcelable{
         address = in.readString();
         recipient = in.readString();
         phone = in.readString();
+        item = in.readArrayList(ItemData.class.getClassLoader());
         verifyCode = in.readString();
+        truck = in.readString();
         userId = in.readString();
+        estimatedTime = in.readString();
+        key = in.readString();
     }
 
     public MapData() {
@@ -116,6 +122,14 @@ public class MapData implements Parcelable{
         this.userId = userId;
     }
 
+    public String getEstimatedTime() {
+        return estimatedTime;
+    }
+
+    public void setEstimatedTime(String estimatedTime) {
+        this.estimatedTime = estimatedTime;
+    }
+
     @Exclude
     public MarkerOptions getMarker() {
         MarkerOptions markerOptions = new MarkerOptions();
@@ -137,6 +151,8 @@ public class MapData implements Parcelable{
         marker.setVerifyCode((String) mapObj.get("verifyCode"));
         marker.setUserId((String) mapObj.get("userId"));
         marker.setKey((String) mapObj.get("key"));
+        marker.setTruck((String) mapObj.get("truck"));
+        marker.setEstimatedTime((String) mapObj.get("estimatedTime"));
         marker.setPosition(converPositionFromFirebase(mapObj));
         marker.setItem(convertItemsFromFirebase(mapObj));
         return marker;
@@ -171,6 +187,13 @@ public class MapData implements Parcelable{
         }
     }
 
+    public Location convertToPosition(){
+        Location location = new Location("dummy_provider");
+        location.setLatitude(position.latitude);
+        location.setLongitude(position.longitude);
+        return location;
+    }
+
     @Exclude
     @Override
     public int describeContents() {
@@ -184,8 +207,13 @@ public class MapData implements Parcelable{
         parcel.writeString(address);
         parcel.writeString(recipient);
         parcel.writeString(phone);
+        parcel.writeList(item);
         parcel.writeString(verifyCode);
+        parcel.writeString(truck);
         parcel.writeString(userId);
+        parcel.writeString(estimatedTime);
+        parcel.writeString(key);
+
     }
 
     public void setKey(String key) {

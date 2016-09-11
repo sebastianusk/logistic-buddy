@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -29,8 +31,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         FirebaseHandler.initializeAuth(new FirebaseHandler.SessionListener() {
             @Override
@@ -46,11 +50,12 @@ public class LoginActivity extends AppCompatActivity {
                 final ProgressDialog dialog = new ProgressDialog(LoginActivity.this);
                 dialog.setTitle("Please wait...");
                 dialog.show();
-                checkRole();
                 FirebaseHandler.signInWithEmailAndPassword(username.getText().toString(),
                         password.getText().toString(), new FirebaseHandler.FirebaseListener() {
                             @Override
                             public void onSuccess() {
+                                checkRole();
+
                                 dialog.dismiss();
                                 startActivity(new Intent(LoginActivity.this, MenuActivity.class));
                                 finish();
@@ -68,21 +73,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void checkRole() {
-        switch (username.getText().toString()){
-            case SessionHandler.DRIVER:
-                String driverId = FirebaseHandler.getCurrentSessionDriverId();
-                SessionHandler.setSession(this, SessionHandler.DRIVER, driverId);
-                break;
-            case SessionHandler.CLIENT:
-                String userId = FirebaseHandler.getCurrentSessionUserId();
-                SessionHandler.setSession(this, SessionHandler.CLIENT, userId);
-                break;
-            case SessionHandler.SERVER:
-                SessionHandler.setSession(this,SessionHandler.SERVER);
-                break;
-            default:
-                SessionHandler.setSession(this, SessionHandler.MASTER);
-                break;
+        if (username.getText().toString().startsWith("driver")) {
+            String driverId = FirebaseHandler.getCurrentSessionDriverId();
+            SessionHandler.setSession(this, SessionHandler.DRIVER, driverId);
+        } else if (username.getText().toString().startsWith("client")) {
+            String userId = FirebaseHandler.getCurrentSessionUserId();
+            SessionHandler.setSession(this, SessionHandler.CLIENT, userId);
+        } else if (username.getText().toString().startsWith("server")) {
+            SessionHandler.setSession(this, SessionHandler.SERVER);
+        } else {
+            SessionHandler.setSession(this, SessionHandler.MASTER);
         }
     }
 }

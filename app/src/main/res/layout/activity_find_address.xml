@@ -40,7 +40,8 @@
             android:id="@+id/address"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:background="@color/white"/>
 
         <RelativeLayout
             android:id="@+id/pointer_submit"
