@@ -358,7 +358,7 @@ public class FirebaseHandler {
         DatabaseReference mFirebaseDatabaseReference;
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mFirebaseDatabaseReference.child(TRUCK).child(truck)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
+                .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Log.i(TAG, "data shanpshot is " + dataSnapshot.toString());
