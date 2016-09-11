@@ -2,14 +2,20 @@ package com.batp.logisticbuddy.driverapplication;
 
 import android.Manifest;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.AudioManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.util.Log;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
@@ -67,6 +73,10 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     private TextView confirmDeliveredButton;
     private TextView testSuccessButton;
 
+    private AudioManager audioManager;
+
+    private Vibrator vibrator;
+
     private int steps;
 
     private FirebaseHandler firebaseHandler;
@@ -110,6 +120,10 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     @Override
     public void onMapReady(GoogleMap googleMap) {
         super.onMapReady(googleMap);
+
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         firebaseHandler = new FirebaseHandler();
 
@@ -397,6 +411,16 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                         + Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0"))
                         * Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0"))
                 );
+
+                if(vector > 25) {
+                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                    r.play();
+                    int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+                    audioManager.setStreamVolume(AudioManager.STREAM_ALARM, maxVolume,AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+                    vibrator.vibrate(500);
+                    Toast.makeText(this, "Slow down mate", Toast.LENGTH_LONG).show();
+                }
 
                 if(vector > 30){
                     FirebaseHandler.updateStatus("ON HIT!!!", new FirebaseHandler.FirebaseListener() {
