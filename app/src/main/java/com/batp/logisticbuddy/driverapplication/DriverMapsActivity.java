@@ -371,6 +371,31 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                     y.setText(resultData.getString(DriverIntentService.SENSOR_Y_AXIS, "0"));
                 if(Double.parseDouble(z.getText().toString()) < Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0")))
                     z.setText(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0"));
+
+                Double vector = Math.sqrt(
+                        Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0"))
+                        * Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0"))
+                        + Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Y_AXIS, "0"))
+                        * Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Y_AXIS, "0"))
+                        + Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0"))
+                        * Double.parseDouble(resultData.getString(DriverIntentService.SENSOR_Z_AXIS, "0"))
+                );
+
+                if(vector > 17){
+                    FirebaseHandler.updateStatus("ON HIT!!!", new FirebaseHandler.FirebaseListener() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onFailed(String error) {
+
+                        }
+                    });
+                }
+
+
                 break;
             case 11:
                 currentDriverLocation = resultData.getParcelable(DriverIntentService.LOCATION_KEY);
@@ -409,6 +434,24 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         } else {
             confirmDeliveredButton.setVisibility(View.GONE);
             startDriveButton.setVisibility(View.VISIBLE);
+        }
+
+        if(location.getSpeed() < 1){
+            velocityListener.onVelocityChanged((double) location.getSpeed());
+        }
+
+        if (location.getSpeed() > 80){
+            FirebaseHandler.updateStatus("TOO FAST", new FirebaseHandler.FirebaseListener() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onFailed(String error) {
+
+                }
+            });
         }
     }
 
