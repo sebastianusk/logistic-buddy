@@ -49,7 +49,6 @@ public class ServerActivity extends BaseMapActivity {
     private MapData baseMapData;
 
 
-    @OnClick(R.id.button_get_clients)
     void getClients(){
         // making sure that the maps is ready
         if(mMap != null){
@@ -61,7 +60,6 @@ public class ServerActivity extends BaseMapActivity {
         }
     }
 
-    @OnClick(R.id.button_find_routes)
     void findFastestRoutes(){
         dialog.show();
         RouteCalc routeCalc = new RouteCalcImpl(getString(R.string.google_direction_key));
@@ -131,7 +129,6 @@ public class ServerActivity extends BaseMapActivity {
         }));
     }
 
-    @OnClick(R.id.button_set_base)
     void setBase(){
         Intent intent = new Intent(ServerActivity.this
                 , FindAddressActivity.class);
@@ -141,11 +138,6 @@ public class ServerActivity extends BaseMapActivity {
             intent.putExtra(CreateOrderActivity.PARAM_LONGITUDE, baseMapData.getPosition().longitude);
         }
         startActivityForResult(intent, REQUEST_LOCATION);
-    }
-
-    @OnClick(R.id.button_manage_truck)
-    void setTruck(){
-
     }
 
     @BindView(R.id.recycler_view_drawer)

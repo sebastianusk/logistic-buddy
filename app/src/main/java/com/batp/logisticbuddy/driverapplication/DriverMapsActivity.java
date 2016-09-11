@@ -455,10 +455,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                                     });
                                 }
                             });
-
                 }
-
-
                 break;
         }
     }
