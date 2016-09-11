@@ -2,6 +2,8 @@ package com.batp.logisticbuddy.server;
 
 import android.content.Intent;
 import android.location.LocationListener;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -45,6 +47,7 @@ public class ServerActivity extends BaseMapActivity {
     private Map<String, TruckData> driverDatas;
     private FirebaseHandler firebaseHandler;
     private MapData baseMapData;
+
 
     @OnClick(R.id.button_get_clients)
     void getClients(){
