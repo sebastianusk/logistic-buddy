@@ -32,9 +32,9 @@ public class SessionHandler {
         return context.getSharedPreferences(SESSION, Context.MODE_PRIVATE).getString(ROLE,"");
     }
 
-    public static String getCurrentDriver() {
+    public static String getCurrentDriver(Context context) {
         //TODO GET DRIVER ID
-        return "driver1";
+        return context.getSharedPreferences(SESSION, Context.MODE_PRIVATE).getString(USER_ID,"");
     }
 
     public static String getUserId(Context context) {

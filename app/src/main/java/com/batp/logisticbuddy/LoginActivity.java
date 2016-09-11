@@ -73,8 +73,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void checkRole() {
-        if (username.getText().toString().startsWith("driver")) {
-            String driverId = FirebaseHandler.getCurrentSessionDriverId();
+        if (username.getText().toString().startsWith("truck")) {
+            String driverId = username.getText().toString();
+            driverId = driverId.substring(0, 6);
             SessionHandler.setSession(this, SessionHandler.DRIVER, driverId);
         } else if (username.getText().toString().startsWith("client")) {
             String userId = FirebaseHandler.getCurrentSessionUserId();

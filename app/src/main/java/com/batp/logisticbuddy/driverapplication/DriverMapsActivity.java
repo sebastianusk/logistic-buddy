@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.sql.Driver;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -174,7 +175,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
 
                     @Override
                     public void onNext(Double aDouble) {
-                        FirebaseHandler.updateStatus("STOPPED", new FirebaseHandler.FirebaseListener() {
+                        FirebaseHandler.updateStatus("STOPPED", DriverMapsActivity.this, new FirebaseHandler.FirebaseListener() {
                             @Override
                             public void onSuccess() {
 
@@ -352,7 +353,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
             public void onClick(View v) {
                 dialog.show();
                 googleParameters = new HashMap<>();
-                firebaseHandler.updateStatus("ON THE WAY", new FirebaseHandler.FirebaseListener() {
+                firebaseHandler.updateStatus("ON THE WAY", DriverMapsActivity.this, new FirebaseHandler.FirebaseListener() {
                     @Override
                     public void onSuccess() {
                         startDriveButton.setVisibility(View.GONE);
@@ -371,7 +372,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                             public void onFailed() {
 
                             }
-                        });
+                        }, DriverMapsActivity.this);
                     }
 
                     @Override
@@ -412,7 +413,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                     Observable.create(new Observable.OnSubscribe<String>() {
                         @Override
                         public void call(final Subscriber<? super String> subscriber) {
-                            FirebaseHandler.updateStatus("ON HIT!!!", new FirebaseHandler.FirebaseListener() {
+                            FirebaseHandler.updateStatus("ON HIT!!!", DriverMapsActivity.this, new FirebaseHandler.FirebaseListener() {
                                 @Override
                                 public void onSuccess() {
                                     subscriber.onNext("HIT");
@@ -442,7 +443,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
 
                                 @Override
                                 public void onNext(String s) {
-                                    FirebaseHandler.onAccident(accidentData, new FirebaseHandler.FirebaseListener() {
+                                    FirebaseHandler.onAccident(accidentData, DriverMapsActivity.this, new FirebaseHandler.FirebaseListener() {
                                         @Override
                                         public void onSuccess() {
 
@@ -488,7 +489,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         }
 
         if (location.getSpeed() > 22.2222222){
-            FirebaseHandler.updateStatus("TOO FAST", new FirebaseHandler.FirebaseListener() {
+            FirebaseHandler.updateStatus("TOO FAST", DriverMapsActivity.this, new FirebaseHandler.FirebaseListener() {
                 @Override
                 public void onSuccess() {
 
