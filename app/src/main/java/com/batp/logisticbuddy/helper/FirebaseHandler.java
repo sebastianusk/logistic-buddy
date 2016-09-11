@@ -340,12 +340,7 @@ public class FirebaseHandler {
                         for (Object obj : objectMap.values()) {
                             if (obj instanceof Map) {
                                 Map<String, Object> mapObj = (Map<String, Object>) obj;
-                                for (Object obj2 : mapObj.values()) {
-                                    if (obj2 instanceof Map) {
-                                        Map<String, Object> mapObj2 = (Map<String, Object>) obj2;
-                                        mapDataList.add(MapData.convertFromFirebase(mapObj2));
-                                    }
-                                }
+                                mapDataList.add(MapData.convertFromFirebase(mapObj));
                             }
                         }
                         listener.onSuccess(mapDataList);

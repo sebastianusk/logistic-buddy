@@ -66,7 +66,7 @@ public class OrderDetailActivity extends BaseMapActivity {
 
     private void initDriverStatus() {
 
-        if(mapData.getTruck() != null) {
+        if (mapData.getTruck() != null) {
             final ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setTitle("Please wait...");
             progressDialog.show();
@@ -75,6 +75,7 @@ public class OrderDetailActivity extends BaseMapActivity {
                 public void onSuccess(String status, String lastUpdateTime) {
                     progressDialog.dismiss();
                     driverStatus.setText(status);
+                    lastUpdateTimeText.setVisibility(View.VISIBLE);
                     lastUpdateTimeText.setText("Last update time : " + lastUpdateTime);
                 }
 
@@ -112,11 +113,12 @@ public class OrderDetailActivity extends BaseMapActivity {
     private void initView() {
         recipient.clearFocus();
         mapData = getIntent().getExtras().getParcelable(OrderAdapter.PARAM_DETAIL);
-        if(mapData != null){
+        if (mapData != null) {
             recipient.setText(mapData.getRecipient());
             address.setText(mapData.getAddress());
             phone.setText(mapData.getPhone());
-            expectedTimeArrival.setText(mapData.getEstimatedTime());
+            if (mapData.getEstimatedTime() != null && mapData.getEstimatedTime().toString().length() > 0)
+                expectedTimeArrival.setText(mapData.getEstimatedTime());
 
             itemAdapter = ItemCodeAdapter.createInstance();
             itemAdapter.setDeleteEnabled(false);
