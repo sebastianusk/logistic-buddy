@@ -20,6 +20,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.DrawerView
     public static final int SET_BASE = 0;
     public static final int GET_CLIENT = 1;
     public static final int CALCULATE_ROUTE = 2;
+    public static final int TRUCK_CHECK = 3;
     private final DrawerListener listener;
 
     public DrawerAdapter(DrawerListener listener) {
@@ -43,6 +44,10 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.DrawerView
                 drawableIcon = R.drawable.seqhack_calculate_route;
                 title = "Calculate Route";
                 break;
+            case TRUCK_CHECK:
+                drawableIcon = R.drawable.ic_seqhack_add_button_1;
+                title = "Check Truck";
+                break;
             default:
                 drawableIcon = R.drawable.seqhack_map;
                 title = "Set Base";
@@ -59,7 +64,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.DrawerView
 
     @Override
     public int getItemCount() {
-        return 3;
+        return 4;
     }
 
     class DrawerViewHolder extends RecyclerView.ViewHolder {

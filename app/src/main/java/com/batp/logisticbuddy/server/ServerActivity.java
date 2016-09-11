@@ -1,9 +1,10 @@
 package com.batp.logisticbuddy.server;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.LocationListener;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -33,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 
 /**
  * Created by Toped18 on 9/10/2016.
@@ -200,6 +200,9 @@ public class ServerActivity extends BaseMapActivity {
                     case DrawerAdapter.CALCULATE_ROUTE:
                         findFastestRoutes();
                         break;
+                    case DrawerAdapter.TRUCK_CHECK:
+                        checkTruckCondition();
+                        break;
                     default:
                         setBase();
                 }
@@ -232,6 +235,34 @@ public class ServerActivity extends BaseMapActivity {
             }
         });
         return null;
+    }
+
+    private void checkTruckCondition() {
+        FirebaseHandler.getAllTruckStatus(new FirebaseHandler.DriverStatusesListener() {
+            @Override
+            public void onSuccess(List<Pair<String, String>> truckDataMap) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ServerActivity.this);
+                RecyclerView recyclerView = new RecyclerView(ServerActivity.this);
+                DriverStatusAdapter adapter = new DriverStatusAdapter(truckDataMap);
+                recyclerView.setAdapter(adapter);
+                LinearLayoutManager layoutManager = new LinearLayoutManager(ServerActivity.this);
+                recyclerView.setLayoutManager(layoutManager);
+                builder.setView(recyclerView);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.show();
+
+            }
+
+            @Override
+            public void onFailed() {
+
+            }
+        });
     }
 
     private void addTruck(TruckData data) {

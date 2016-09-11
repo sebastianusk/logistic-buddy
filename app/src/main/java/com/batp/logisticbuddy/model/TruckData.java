@@ -9,6 +9,7 @@ import java.util.Map;
 public class TruckData {
     Map<String, MapData> destinations;
     String status;
+    private String lastUpdate;
 
     public Map<String, MapData> getDestinations() {
         return destinations;
@@ -24,5 +25,9 @@ public class TruckData {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void setLastUpdate(String lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 }

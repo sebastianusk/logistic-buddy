@@ -2,6 +2,7 @@ package com.batp.logisticbuddy.helper;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
 import android.util.Log;
 
 import com.batp.logisticbuddy.model.AccidentData;
@@ -23,6 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -377,6 +379,38 @@ public class FirebaseHandler {
                 });
     }
 
+    public static void getAllTruckStatus(final DriverStatusesListener listener){
+        if(listener == null) return;
+
+        DatabaseReference mFirebaseDatabaseReference;
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference.child(TRUCK)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Map<String, Object> listTruck = (Map<String, Object>) dataSnapshot.getValue();
+                        Map<String, TruckData> truckDataMap = new HashMap<String, TruckData>();
+                        List<Pair<String, String>> truckStatus = new ArrayList<Pair<String, String>>();
+                        Log.i(TAG, "data shanpshot is " + dataSnapshot.toString());
+                        for (Map.Entry<String, Object> entry : listTruck.entrySet()) {
+                            Map<String, Object> objectMap = (Map<String, Object>) entry.getValue();
+                            Pair<String,String> truckData = new Pair<String, String>(
+                                    String.valueOf(entry.getKey()),
+                                    String.valueOf(objectMap.get("status"))
+                            );
+                            truckStatus.add(truckData);
+                        }
+                        listener.onSuccess(truckStatus);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+    }
+
     public static void updateStatus(String s, final Context context, final FirebaseListener listener) {
         if (listener == null) {
             return;
@@ -475,6 +509,12 @@ public class FirebaseHandler {
 
     public interface GetDriverDesignatedLocations {
         void onSuccessList(List<MapData> mapDatas);
+
+        void onFailed();
+    }
+
+    public interface DriverStatusesListener{
+        void onSuccess(List<Pair<String, String>> truckDataMap);
 
         void onFailed();
     }
