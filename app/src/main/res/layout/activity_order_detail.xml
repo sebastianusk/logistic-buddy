@@ -30,6 +30,7 @@
                 android:drawablePadding="@dimen/margin_small"
                 android:hint="Recipient Name"
                 android:enabled="false"
+                android:textSize="16sp"
                 android:imeOptions="actionNext"
                 android:inputType="textCapWords">
             </EditText>
@@ -48,6 +49,7 @@
                 android:drawableLeft="@drawable/ic_call_black_40dp"
                 android:drawablePadding="@dimen/margin_small"
                 android:hint="Phone Number"
+                android:textSize="16sp"
                 android:enabled="false"
 
                 android:imeOptions="actionDone"
@@ -68,6 +70,7 @@
                 android:drawablePadding="@dimen/margin_small"
                 android:hint="Delivery Status"
                 android:text="NOT ASSIGNED"
+                android:textSize="16sp"
                 android:enabled="false"
                 android:inputType="text" />
         </android.support.design.widget.TextInputLayout>
@@ -77,7 +80,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Last updated time xxx"
-            android:textSize="10dp"
+            android:textSize="12dp"
             android:visibility="gone"
             android:textStyle="italic"/>
 
@@ -90,6 +93,7 @@
                 android:id="@+id/expected_time_of_arrival"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="16sp"
                 android:background="@android:color/transparent"
                 android:drawableLeft="@drawable/ic_alarm_black_40dp"
                 android:drawablePadding="@dimen/margin_small"
@@ -112,6 +116,26 @@
                 android:drawableLeft="@drawable/ic_home_black_40dp"
                 android:drawablePadding="@dimen/margin_small"
                 android:hint="Address"
+                android:enabled="false"
+                android:textSize="16sp"
+                android:inputType="textCapWords"
+                android:maxLines="10" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp">
+
+            <EditText
+                android:id="@+id/verify_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:background="@android:color/transparent"
+                android:drawableLeft="@drawable/ic_fiber_pin_black_40dp"
+                android:drawablePadding="@dimen/margin_small"
+                android:hint="Verify Code"
                 android:enabled="false"
                 android:inputType="textCapWords"
                 android:maxLines="10" />
