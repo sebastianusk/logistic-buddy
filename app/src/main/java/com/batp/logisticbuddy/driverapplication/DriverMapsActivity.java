@@ -37,10 +37,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by kris on 9/10/16. Tokopedia
@@ -76,6 +82,8 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
 //    private List<String> customerOTP;
 
     private MarkerOptions driverMarker;
+
+    private VelocityListener velocityListener;
 
     @Override
     protected int getLayoutId() {
@@ -131,6 +139,52 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
         receiver = new SpeedingResultReceiver(new Handler());
         receiver.setReceiver(this);
         DriverIntentService.startBackgroundService(this, receiver);
+
+        Observable.create(new Observable.OnSubscribe<Double>() {
+            @Override
+            public void call(final Subscriber<? super Double> subscriber) {
+                velocityListener = new VelocityListener() {
+                    @Override
+                    public void onVelocityChanged(Double velocity) {
+                        subscriber.onNext(velocity);
+                    }
+                };
+            }
+        })
+                .debounce(5, TimeUnit.MINUTES)
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Double>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Double aDouble) {
+                        FirebaseHandler.updateStatus("STOPPED", new FirebaseHandler.FirebaseListener() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailed(String error) {
+
+                            }
+                        });
+                    }
+                });
+    }
+
+    private interface VelocityListener{
+        void onVelocityChanged(Double velocity);
     }
 
     private View.OnClickListener onDelivered() {
@@ -176,7 +230,6 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(startLatLng));
                     mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
                     setDestination(currentLeg);
-                    dialog.show();
                     MapData mapData = mapDatasAssigned.get(currentDestinationIndex + 1);
                     mapData.setEstimatedTime(currentLeg.getDuration().getText());
                     FirebaseHandler.updateOrder(mapData, new FirebaseHandler.FirebaseListener() {
@@ -191,6 +244,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
                         }
                     });
                 }
+                dialog.dismiss();
             }
 
             @Override
@@ -347,6 +401,7 @@ public class DriverMapsActivity extends BaseMapActivity implements SpeedingResul
     @Override
     public void onLocationChanged(Location location) {
         LatLng realTimeLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+
         driverMarker.position(realTimeLatLng);
         if(location.distanceTo(mapDatasAssigned.get(currentDestinationIndex + 1).convertToPosition()) <  CLOSE_DISTANCE){
             confirmDeliveredButton.setVisibility(View.VISIBLE);
